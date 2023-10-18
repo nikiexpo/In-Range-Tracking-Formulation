@@ -27,23 +27,28 @@ function [dx] = myProblem_Dynamics_Sim(x,u,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Stored data
-auxdata = data.auxdata;
+m = data.m;
 
 %Define states
 x1 = x(:,1);
-%...
-xn=x(:,n),
+v1 = x(:,2);
+E =x(:,3);
 
 %Define inputs
 u1 = u(:,1);
-% ...
-um = u(:,m);
 
 
 %Define ODE right-hand side
-dx(:,1) = f1(x1,..xn,u1,..um,p,t);
-%...
-dx(:,n) = fn(x1,..xn,u1,..um,p,t);
+dx(:,1) = v1;
+dx(:,2) = u1./m;
+dx(:,3) = -0.1 - (0.283*u1).^2 - (0.566*v1).^2;
 
+% %Define Path constraints
+% g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
+% g_eq(:,2)=g_eq2(x1,...,u1,...p,t);
+% ...
+% 
+
+g_neq(:,1)= (x1 - sin(2.*pi.*t./50));
 
 %------------- END OF CODE --------------

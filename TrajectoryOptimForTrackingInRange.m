@@ -37,13 +37,13 @@ problem.settings=@settings_TrajectoryOptimForTrackingInRange;
 
 %Initial Time. t0<tf
 problem.time.t0_min=0;
-problem.time.t0_max=0;
-guess.t0=0;
+problem.time.t0_max = 0;
+guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=500;     
-problem.time.tf_max=500; 
-guess.tf=500;
+problem.time.tf_min=1;     
+problem.time.tf_max=3000; 
+guess.tf=300;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -51,14 +51,14 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[0 5 100];
+problem.states.x0=[0 0 100];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[0 5 100]; 
-problem.states.x0u=[0 5 100]; 
+problem.states.x0l=[0 0 100];
+problem.states.x0u=[0 0 100];
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-100 -5 50];
+problem.states.xl=[-100 -5 0]; 
 problem.states.xu=[100 5 100];
 
 % State rate bounds. xrl=< x_dot <=xru
@@ -66,11 +66,11 @@ problem.states.xu=[100 5 100];
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[1e-6 1e-6 1e-6]; 
-problem.states.xErrorTol_integral=[1e-6 1e-6 1e-6]; 
+problem.states.xErrorTol_local=[0.1 0.1 0.1]; 
+problem.states.xErrorTol_integral=[0.1 0.1 0.1]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[1e-4 1e-4 1e-4];
+problem.states.xConstraintTol=[0.1 0.5 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
@@ -80,7 +80,9 @@ problem.states.xfu=[0 0 100];
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
 guess.states(:,1)=[0 0];
+
 guess.states(:,2)=[0 0];
+
 guess.states(:,3)=[100 50];
 
 % Number of control actions N 
@@ -112,10 +114,10 @@ guess.inputs(:,1)=[0 0];
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
-% delta = 0.5
-problem.constraints.gl=[]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gu=[]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gTol_neq=[]; % inequality constraint error bounds
+
+problem.constraints.gl=[-1]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gu=[1]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
 
 % OPTIONAL: define the time duration each constraint will be active, for
 % example (for ECH enabled in setings)
@@ -130,12 +132,18 @@ problem.constraints.bu=[];
 problem.constraints.bTol=[]; 
 
 % store the necessary problem parameters used in the functions
-problem.data.m=0.4259;
-problem.data.delta = 0.5/2;
+problem.data.m=10;
+problem.data.delta = 0.5;
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
 % problem.data.penalty.i=1; %starting weight
 
+pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
+tt = linspace(0,3000,length(pt));
+
+x_t = pchip(tt,pt);
+
+problem.data.XT = x_t;
 
 
 % Get function handles and return to Main.m
@@ -182,12 +190,13 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Define states and setpoints
-if ( (-data.delta <= x(:,1) - sin(2.*pi.*t./50)) & (x(:,1) - sin(2.*pi.*t./50) <= data.delta))
-    stageCost = -1*t;
-else
-    stageCost = 1*t;
-end
+x = x(:, 1); % Chaser position
 
+xt = data.XT;% Target position
+
+x_t = ppval(xt,t);
+
+stageCost = 200.*(x-x_t).^2;
 %------------- END OF CODE --------------
 
 

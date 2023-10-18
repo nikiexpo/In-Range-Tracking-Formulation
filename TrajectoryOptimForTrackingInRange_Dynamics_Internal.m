@@ -1,5 +1,5 @@
 
-function [dx] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
+function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
 % Template for specifying the dynamics for internal model 
 %
 % Syntax:  
@@ -33,10 +33,11 @@ function [dx] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data
 
 %Stored data
 m = data.m;
-
+% xt = ppval(data.XT,t);
+xt = 5.*sin(2.*pi.*t./50);
 %Define states
 x1 = x(:,1);
-dx1 = x(:,2);
+v1 = x(:,2);
 E =x(:,3);
 
 %Define inputs
@@ -44,16 +45,16 @@ u1 = u(:,1);
 
 
 %Define ODE right-hand side
-dx(:,1) = dx1;
+dx(:,1) = v1;
 dx(:,2) = u1./m;
-dx(:,3) = -0.05 - (0.02*u1).^2 - (0.04*x1).^2;
+dx(:,3) = -0.1 - (0.283*u1).^2 - (0.566*v1).^2;
 
 % %Define Path constraints
 % g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
 % g_eq(:,2)=g_eq2(x1,...,u1,...p,t);
 % ...
 % 
-
-%g_neq(:,1)=x1 - (t./20 + 15) .* sin(2.*pi.*t./50);
+% 
+g_neq(:,1)= (x1 - xt) ./ data.delta;
 
 %------------- END OF CODE --------------
