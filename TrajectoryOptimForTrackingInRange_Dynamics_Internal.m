@@ -34,7 +34,7 @@ function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p
 %Stored data
 m = data.m;
 % xt = ppval(data.XT,t);
-xt = 5.*sin(2.*pi.*t./50);
+xt = 5.*sin(2.*pi.*t./200);
 %Define states
 x1 = x(:,1);
 v1 = x(:,2);
@@ -55,6 +55,6 @@ dx(:,3) = -0.1 - (0.283*u1).^2 - (0.566*v1).^2;
 % ...
 % 
 % 
-g_neq(:,1)= (x1 - xt).^2 ./ data.delta.^2;
+g_neq(:,1)= (x1 - xt).^2 - data.delta.^2;
 
 %------------- END OF CODE --------------

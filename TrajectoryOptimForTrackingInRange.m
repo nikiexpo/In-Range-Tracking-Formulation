@@ -115,8 +115,8 @@ problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
 
-problem.constraints.gl=[0]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gu=[1]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gl=[-inf]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gu=[0]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
 problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
 
 % OPTIONAL: define the time duration each constraint will be active, for
@@ -133,7 +133,7 @@ problem.constraints.bTol=[];
 
 % store the necessary problem parameters used in the functions
 problem.data.m=10;
-problem.data.delta = 0.5;
+problem.data.delta = 2.5;
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
 % problem.data.penalty.i=1; %starting weight
@@ -190,13 +190,14 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Define states and setpoints
-x = x(:, 1); % Chaser position
+%x = x(:, 1); % Chaser position
 
 %xt = data.XT;% Target position
 
-x_t = 5.*sin(2.*pi.*t./50);
+%x_t = 5.*sin(2.*pi.*t./50);
 
-stageCost = 200.*(x-x_t).^2;
+%stageCost = 200.*(x-x_t).^2;
+stageCost = 0.*t;
 %------------- END OF CODE --------------
 
 
@@ -221,7 +222,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=0;
+boundaryCost=-tf;
 
 %------------- END OF CODE --------------
 
