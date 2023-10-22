@@ -74,8 +74,8 @@ problem.states.xConstraintTol=[0.1 0.5 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[0 0 50]; 
-problem.states.xfu=[0 0 100];
+problem.states.xfl=[-6 -5 50]; 
+problem.states.xfu=[6 5 100];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
@@ -115,7 +115,7 @@ problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
 
-problem.constraints.gl=[-1]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gl=[0]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
 problem.constraints.gu=[1]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
 problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
 
@@ -192,9 +192,9 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %Define states and setpoints
 x = x(:, 1); % Chaser position
 
-xt = data.XT;% Target position
+%xt = data.XT;% Target position
 
-x_t = ppval(xt,t);
+x_t = 5.*sin(2.*pi.*t./50);
 
 stageCost = 200.*(x-x_t).^2;
 %------------- END OF CODE --------------
