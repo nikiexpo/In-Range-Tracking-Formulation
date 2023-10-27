@@ -45,3 +45,4 @@ hold on
 plot(solution.T, 5.*sin(2.*pi.*solution.T./200) + problem.data.delta)
 plot(solution.T, 5.*sin(2.*pi.*solution.T./200) - problem.data.delta)
 hold off 
+legend(["Tracker", "Upper Bound", "Lower Bound"])
