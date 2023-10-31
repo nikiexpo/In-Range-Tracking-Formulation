@@ -51,31 +51,31 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[0 0 0 0 100 100];
+problem.states.x0=[0 0 100];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[0 0 0 0 100 100];
-problem.states.x0u=[0 0 0 0 100 100];
+problem.states.x0l=[0 0 100];
+problem.states.x0u=[0 0 100];
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-100 -100 -5 -5 0 0]; 
-problem.states.xu=[100 100 5 5 100 100];
+problem.states.xl=[-100 -5 0]; 
+problem.states.xu=[100 5 100];
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[0.1 0.1 0.1 0.1 0.1 0.1]; 
-problem.states.xErrorTol_integral=[0.1 0.1 0.1 0.1 0.1 0.1]; 
+problem.states.xErrorTol_local=[0.1 0.1 0.1]; 
+problem.states.xErrorTol_integral=[0.1 0.1 0.1]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[0.1 0.1 0.1 0.1 0.1 0.1];
+problem.states.xConstraintTol=[0.1 0.5 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[-6 -6 -5 -5 50 50]; 
-problem.states.xfu=[6 6 5 5 100 100];
+problem.states.xfl=[-6 -5 50]; 
+problem.states.xfu=[6 5 100];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
@@ -83,10 +83,8 @@ guess.states(:,1)=[0 0];
 
 guess.states(:,2)=[0 0];
 
-guess.states(:,3)=[0 0];
-guess.states(:,4)=[0 0];
-guess.states(:,5)=[100 50];
-guess.states(:,6)=[100 50];
+guess.states(:,3)=[100 50];
+
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
 % Note that the number of integration steps defined in settings.m has to be divisible 
@@ -94,24 +92,23 @@ guess.states(:,6)=[100 50];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[-15 -15];
-problem.inputs.uu=[15 15];
+problem.inputs.ul=[-15];
+problem.inputs.uu=[15];
 
 % Bounds on the first control action
-problem.inputs.u0l=[-15 -15];
-problem.inputs.u0u=[15 15];
+problem.inputs.u0l=[-15];
+problem.inputs.u0u=[15];
 
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1 0.1];
+problem.inputs.uConstraintTol=[0.1];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
 guess.inputs(:,1)=[0 0];
-guess.inputs(:,2)=[0 0];
 
 % Path constraint function 
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
@@ -147,7 +144,7 @@ tt = linspace(0,3000,length(pt));
 x_t = pchip(tt,pt);
 
 problem.data.XT = x_t;
-problem.data.xb = 0;
+
 
 % Get function handles and return to Main.m
 problem.data.InternalDynamics=InternalDynamics;
@@ -200,7 +197,7 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %x_t = 5.*sin(2.*pi.*t./50);
 
 %stageCost = 200.*(x-x_t).^2;
-stageCost = u(:,1).^2 + u(:,2).^2;
+stageCost = 0.*t;
 %------------- END OF CODE --------------
 
 

@@ -41,9 +41,8 @@ options= problem.settings(100);                  % Get options and solver settin
 
 plot(solution.T, solution.X(:,1))
 hold on
-plot(solution.T, solution.X(:,2))
 %plot(solution.T, 5.*sin(2.*pi.*solution.T./200))
 plot(solution.T, 5.*sin(2.*pi.*solution.T./200) + problem.data.delta)
 plot(solution.T, 5.*sin(2.*pi.*solution.T./200) - problem.data.delta)
 hold off 
-legend(["Tracker1", "Tracker2","Upper Bound", "Lower Bound"])
+legend(["Tracker", "Upper Bound", "Lower Bound"])

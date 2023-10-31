@@ -37,24 +37,17 @@ m = data.m;
 xt = 5.*sin(2.*pi.*t./200);
 %Define states
 x1 = x(:,1);
-x2 = x(:,2);
-v1 = x(:,3);
-v2 = x(:,4);
-E1 =x(:,5);
-E2 = x(:,6);
+v1 = x(:,2);
+E =x(:,3);
 
 %Define inputs
 u1 = u(:,1);
-u2 = u(:,2);
 
 
 %Define ODE right-hand side
 dx(:,1) = v1;
-dx(:,2) = v2;
-dx(:,3) = u1./m;
-dx(:,4) = u2./m;
-dx(:,5) = -exp(-(x1 - data.xb).^2).*0.1 - (0.283*u1).^2 - (0.566*v1).^2;
-dx(:,6) = -exp(-(x2 - data.xb).^2).*0.1 - (0.283*u2).^2 - (0.566*v2).^2;
+dx(:,2) = u1./m;
+dx(:,3) = -0.1 - (0.283*u1).^2 - (0.566*v1).^2;
 
 % %Define Path constraints
 % g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
@@ -62,6 +55,6 @@ dx(:,6) = -exp(-(x2 - data.xb).^2).*0.1 - (0.283*u2).^2 - (0.566*v2).^2;
 % ...
 % 
 % 
-g_neq(:,1)= 0.5.*((x1 - xt).^2 + (x2 - xt).^2 - abs((x1 - xt).^2 - (x2 - xt).^2)) - data.delta.^2;
+g_neq(:,1)= (x1 - xt).^2 - data.delta.^2;
 
 %------------- END OF CODE --------------
