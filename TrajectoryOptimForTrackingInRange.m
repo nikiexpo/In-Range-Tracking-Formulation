@@ -32,6 +32,8 @@ problem.analyticDeriv.jacConst=[];
 % (optional) customized call back function
 %problem.callback=@callback_myProblem;
 
+xb = 0;
+
 % Settings file
 problem.settings=@settings_TrajectoryOptimForTrackingInRange;
 
@@ -42,8 +44,8 @@ guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
 problem.time.tf_min=1;     
-problem.time.tf_max=3000; 
-guess.tf=300;
+problem.time.tf_max=100000; 
+guess.tf=1000;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -58,9 +60,10 @@ problem.states.x0l=[0 0 0 0 100 100];
 problem.states.x0u=[0 0 0 0 100 100];
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-100 -100 -5 -5 0 0]; 
-problem.states.xu=[100 100 5 5 100 100];
-
+% problem.states.xl=[-100 -100 -5 -5 50 50]; 
+% problem.states.xu=[ 100 100 5 5 100 100];
+problem.states.xl=[xb xb -5 -5 50 50]; 
+problem.states.xu=[ 100 100 5 5 100 100];
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
@@ -74,8 +77,8 @@ problem.states.xConstraintTol=[0.1 0.1 0.1 0.1 0.1 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[-6 -6 -5 -5 50 50]; 
-problem.states.xfu=[6 6 5 5 100 100];
+problem.states.xfl=[xb xb 0 0 50 50]; 
+problem.states.xfu=[xb xb 0 0 50 50];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
@@ -94,13 +97,15 @@ guess.states(:,6)=[100 50];
 problem.inputs.N=0;       
       
 % Input bounds
+% problem.inputs.ul=[-15 -15 -1];
+% problem.inputs.uu=[15 15 0];
 problem.inputs.ul=[-15 -15];
 problem.inputs.uu=[15 15];
-
 % Bounds on the first control action
 problem.inputs.u0l=[-15 -15];
 problem.inputs.u0u=[15 15];
-
+% problem.inputs.u0l=[-15 -15 -1];
+% problem.inputs.u0u=[15 15 0];
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
@@ -112,7 +117,7 @@ problem.inputs.urConstraintTol=[];
 % Guess the input sequences with [u0 ... uf]
 guess.inputs(:,1)=[0 0];
 guess.inputs(:,2)=[0 0];
-
+guess.inputs(:,3)=[0 0];
 % Path constraint function 
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
@@ -147,7 +152,7 @@ tt = linspace(0,3000,length(pt));
 x_t = pchip(tt,pt);
 
 problem.data.XT = x_t;
-problem.data.xb = 0;
+problem.data.xb = xb;
 
 % Get function handles and return to Main.m
 problem.data.InternalDynamics=InternalDynamics;
