@@ -62,7 +62,7 @@ problem.states.x0u=[0 0 0 0 100 100];
 % State bounds. xl=< x <=xu
 % problem.states.xl=[-100 -100 -5 -5 50 50]; 
 % problem.states.xu=[ 100 100 5 5 100 100];
-problem.states.xl=[xb xb -5 -5 50 50]; 
+problem.states.xl=[xb xb -5 -5 0 0]; 
 problem.states.xu=[ 100 100 5 5 100 100];
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
@@ -97,21 +97,21 @@ guess.states(:,6)=[100 50];
 problem.inputs.N=0;       
       
 % Input bounds
-% problem.inputs.ul=[-15 -15 -1];
-% problem.inputs.uu=[15 15 0];
-problem.inputs.ul=[-15 -15];
-problem.inputs.uu=[15 15];
+problem.inputs.ul=[-15 -15 -1];
+problem.inputs.uu=[15 15 0];
+% problem.inputs.ul=[-15 -15];
+% problem.inputs.uu=[15 15];
 % Bounds on the first control action
-problem.inputs.u0l=[-15 -15];
-problem.inputs.u0u=[15 15];
-% problem.inputs.u0l=[-15 -15 -1];
-% problem.inputs.u0u=[15 15 0];
+% problem.inputs.u0l=[-15 -15];
+% problem.inputs.u0u=[15 15];
+problem.inputs.u0l=[-15 -15 -1];
+problem.inputs.u0u=[15 15 0];
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1 0.1];
+problem.inputs.uConstraintTol=[0.1 0.1 0.001];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
@@ -142,6 +142,7 @@ problem.constraints.bTol=[];
 % store the necessary problem parameters used in the functions
 problem.data.m=10;
 problem.data.delta = 2.5;
+problem.data.lambda = 10;
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
 % problem.data.penalty.i=1; %starting weight
@@ -205,7 +206,7 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %x_t = 5.*sin(2.*pi.*t./50);
 
 %stageCost = 200.*(x-x_t).^2;
-stageCost = u(:,1).^2 + u(:,2).^2;
+stageCost = (u(:,1).^2 + u(:,2).^2).*data.lambda;
 %------------- END OF CODE --------------
 
 

@@ -33,8 +33,8 @@ function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p
 
 %Stored data
 m = data.m;
-% xt = ppval(data.XT,t);
-xt = 5.*sin(2.*pi.*t./200);
+xt = ppval(data.XT,t);
+% xt = 5.*sin(2.*pi.*t./200)+5.5;
 %Define states
 x1 = x(:,1);
 x2 = x(:,2);
@@ -53,20 +53,23 @@ dx(:,1) = v1;
 dx(:,2) = v2;
 dx(:,3) = u1./m;
 dx(:,4) = u2./m;
-dx(:,5) = -exp(-(x1 - data.xb).^2).*0.1 - (0.283*u1).^2 - (0.566*v1).^2;
-dx(:,6) = -exp(-(x2 - data.xb).^2).*0.1 - (0.283*u2).^2 - (0.566*v2).^2;
+% dx(:,5) = -exp(-(x1 - data.xb).^2).*0.1 - (0.283*u1).^2 - (0.566*v1).^2;
+% dx(:,6) = -exp(-(x2 - data.xb).^2).*0.1 - (0.283*u2).^2 - (0.566*v2).^2;
 % dx(:,5) = -tanh(40.*(x1 - data.xb)).*0.1 - (0.283*u1).^2 - (0.566*v1).^2;
 % dx(:,6) = -tanh(40.*(x2 - data.xb)).*0.1 - (0.283*u2).^2 - (0.566*v2).^2;
+dx(:,5) = -(1+tanh(10.*(x1 + 4.5))).*0.1 - (0.283*u1).^2 - (0.566*v1).^2;
+dx(:,6) = -(1+tanh(10.*(x2 + 4.5))).*0.1 - (0.283*u2).^2 - (0.566*v2).^2;
+
 % %Define Path constraints
 % g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
 % g_eq(:,2)=g_eq2(x1,...,u1,...p,t);
 % ...
 % 
 % 
-g_neq(:,1)= 0.5.*((x1 - xt).^2 + (x2 - xt).^2 - abs((x1 - xt).^2 - (x2 - xt).^2)) - data.delta.^2;
+%g_neq(:,1)= 0.5.*((x1 - xt).^2 + (x2 - xt).^2 - abs((x1 - xt).^2 - (x2 - xt).^2)) - data.delta.^2;
 
-% f1 = (x1 - xt).^2;
-% f2 = (x2 - xt).^2;
-% y = u(:,3);
-%g_neq(:,1) = f1 + (f1 - f2).*y - data.delta.^2;
+f1 = (x1 - xt).^2;
+f2 = (x2 - xt).^2;
+y = u(:,3);
+g_neq(:,1) = f1 + (f1 - f2).*y - data.delta.^2;
 %------------- END OF CODE --------------
