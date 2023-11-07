@@ -44,7 +44,7 @@ guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
 problem.time.tf_min=1;     
-problem.time.tf_max=100000; 
+problem.time.tf_max=3000; 
 guess.tf=1000;
 
 % Parameters bounds. pl=< p <=pu
@@ -78,7 +78,7 @@ problem.states.xConstraintTol=[0.1 0.1 0.1 0.1 0.1 0.1];
 
 % Terminal state bounds. xfl=< xf <=xfu
 problem.states.xfl=[xb xb 0 0 50 50]; 
-problem.states.xfu=[xb xb 0 0 50 50];
+problem.states.xfu=[xb, xb, 0, 0, 100, 100];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
@@ -141,7 +141,7 @@ problem.constraints.bTol=[];
 
 % store the necessary problem parameters used in the functions
 problem.data.m=10;
-problem.data.delta = 2.5;
+problem.data.delta = 10;
 problem.data.lambda = 10;
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
