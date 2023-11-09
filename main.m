@@ -38,13 +38,16 @@ options= problem.settings(100);                  % Get options and solver settin
 % u1=speval(solution,'U',1,tt);
 % u2=speval(solution,'U',2,tt);
 % ...
+x_t = problem.data.XT;
+t = solution.T;
+xt = ppval(x_t,t);
 figure(1)
 plot(solution.T, solution.X(:,1))
 hold on
 plot(solution.T, solution.X(:,2))
 %plot(solution.T, 5.*sin(2.*pi.*solution.T./200))
-plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+5.5 + problem.data.delta)
-plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+5.5 - problem.data.delta)
+plot(solution.T, xt + problem.data.delta)
+plot(solution.T, xt - problem.data.delta)
 hold off 
 legend(["Tracker1", "Tracker2","Upper Bound", "Lower Bound"])
 

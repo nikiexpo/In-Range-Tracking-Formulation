@@ -43,9 +43,9 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=1;     
-problem.time.tf_max=3000; 
-guess.tf=1000;
+problem.time.tf_min=730;     
+problem.time.tf_max=770; 
+guess.tf=740;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
