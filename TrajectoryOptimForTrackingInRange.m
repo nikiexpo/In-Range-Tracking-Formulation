@@ -44,8 +44,8 @@ guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
 problem.time.tf_min=730;     
-problem.time.tf_max=770; 
-guess.tf=740;
+problem.time.tf_max=inf; 
+guess.tf=770;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -97,27 +97,28 @@ guess.states(:,6)=[100 50];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[-15 -15 -1];
-problem.inputs.uu=[15 15 0];
+problem.inputs.ul=[-15 -15 -1 -1];
+problem.inputs.uu=[15 15 0 1];
 % problem.inputs.ul=[-15 -15];
 % problem.inputs.uu=[15 15];
 % Bounds on the first control action
 % problem.inputs.u0l=[-15 -15];
 % problem.inputs.u0u=[15 15];
-problem.inputs.u0l=[-15 -15 -1];
-problem.inputs.u0u=[15 15 0];
+problem.inputs.u0l=[-15 -15 -1 -1];
+problem.inputs.u0u=[15 15 0 1];
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1 0.1 0.001];
+problem.inputs.uConstraintTol=[0.1 0.1 0.001 0.1];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
 guess.inputs(:,1)=[0 0];
 guess.inputs(:,2)=[0 0];
 guess.inputs(:,3)=[0 0];
+guess.inputs(:,4)=[0 0];
 % Path constraint function 
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
