@@ -142,7 +142,7 @@ problem.constraints.bTol=[];
 
 % store the necessary problem parameters used in the functions
 problem.data.m=10;
-problem.data.delta = 10;
+problem.data.delta = 15;
 problem.data.lambda = 10;
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
@@ -202,12 +202,16 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %Define states and setpoints
 %x = x(:, 1); % Chaser position
 
-%xt = data.XT;% Target position
+xt = ppval(data.XT,t);% Target position
 
 %x_t = 5.*sin(2.*pi.*t./50);
 
 %stageCost = 200.*(x-x_t).^2;
-stageCost = (u(:,1).^2 + u(:,2).^2).*data.lambda;
+s = u(:,4);
+y = u(:,3);
+f1 = (x(:,1) - xt).^2;
+f2 = (x(:,2) - xt).^2;
+stageCost = (u(:,1).^2 + u(:,2).^2).*data.lambda + s.^2;
 %------------- END OF CODE --------------
 
 
