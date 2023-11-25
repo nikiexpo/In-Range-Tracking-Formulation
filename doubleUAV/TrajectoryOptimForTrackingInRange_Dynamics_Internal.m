@@ -78,7 +78,8 @@ dx(:,6) = -0.05.*(1+tanh(10*(x2+4.5))) - (0.2.*sqrt(2).*u2).^2 - (0.4.*sqrt(2).*
 f1 = (x1 - xt).^2;
 f2 = (x2 - xt).^2;
 y = u(:,3);
-
-g_neq(:,1) = f1 + (f1 - f2).*y - data.delta.^2;
+soft_min = @(x,y) -log(exp(-x) + exp(-y));
+% g_neq(:,1) = f1 + (f1 - f2).*y - data.delta.^2;
 % g_neq(:,1) = min(f1,f2) - data.delta.^2 - s.^2;
+g_neq(:,1) = soft_min(f1,f2) - data.delta.^2;
 %------------- END OF CODE --------------
