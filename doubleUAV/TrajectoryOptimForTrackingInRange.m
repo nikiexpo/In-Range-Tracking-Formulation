@@ -80,7 +80,7 @@ problem.states.xConstraintTol=[0.1 0.1 0.1 0.1 0.1 0.1];
 % problem.states.xfl=[xb xb -1 -1 50 50]; 
 % problem.states.xfu=[50, 50, 1, 1, 100, 100];
 problem.states.xfl=[-5 -5, 0, 0, 50 50]; 
-problem.states.xfu=[-5, -5, 0, 0, 100, 100];
+problem.states.xfu=[5, 5, 0, 0, 100, 100];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
@@ -144,7 +144,7 @@ problem.constraints.bTol=[];
 
 % store the necessary problem parameters used in the functions
 problem.data.m=10;
-problem.data.delta = 10;
+problem.data.delta = 5.5;
 problem.data.lambda = 10;
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];

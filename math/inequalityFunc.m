@@ -39,11 +39,29 @@ colorbar
 
 
 %method; Soft max for min so (-max(-x,-y))
-soft_min = @(x,y) -log(exp(-x.^2) + exp(-y.^2)) - delta.^2;
-Fsm = soft_min(X12,X22);
+soft_min = @(x,y,k) -log(exp(-k.*x.^2) + exp(-k.*y.^2))./k - delta.^2;
+Fsm = soft_min(X12,X22,2);
 figure
 surf(X12,X22,Fsm)
 colorbar
+
+Fsm2 = smin(X12.^2,X22.^2,0.1) - delta.^2;
+[U,V,W] = surfnorm(Fsm2);
+figure
+surf(X12,X22,Fsm2)
+colorbar
+figure
+quiver3(X12,X22,F2,U,V,W, 'r')
+
+softmax3 = @(x,y,k) (x.*exp(k.*x) + y.*exp(k.*y)) ./ (exp(k.*x) + exp(k.*y)) ;
+Fsm3 = -softmax3(-X12.^2,-X22.^2,1) - delta.^2;
+figure
+surf(X12,X22,Fsm3)
+colorbar
+
+Fsm4 = -smax(-X12.^2,-X22.^2) - delta.^2;
+figure
+surf(X12,X22,Fsm4)
 
 figure
 hold on
@@ -53,3 +71,15 @@ end
 hold off
 view(45,45)
 colorbar
+
+
+function out = smin(x, y, k)
+h = max(k - abs(x-y), 0) ./ k;
+out = min(x,y) - h.^2.*k.*(1/4);
+end
+
+function out = smax(x,y)
+maxi = max(x,y);
+mini = min(x,y);
+out = maxi + log(1 + exp(mini - maxi));
+end

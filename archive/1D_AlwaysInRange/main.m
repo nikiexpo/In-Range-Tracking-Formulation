@@ -39,10 +39,19 @@ options= problem.settings(100);                  % Get options and solver settin
 % u2=speval(solution,'U',2,tt);
 % ...
 
-plot(solution.T, solution.X(:,1))
+plot(solution.T, solution.X(:,1), LineWidth=3)
+axis([0 solution.T(end)    -15 15])
 hold on
 %plot(solution.T, 5.*sin(2.*pi.*solution.T./200))
 plot(solution.T, 5.*sin(2.*pi.*solution.T./200) + problem.data.delta)
 plot(solution.T, 5.*sin(2.*pi.*solution.T./200) - problem.data.delta)
+x = solution.T;
+y2 = 5.*sin(2.*pi.*solution.T./200) + problem.data.delta;
+y1 = 5.*sin(2.*pi.*solution.T./200) - problem.data.delta;
+patch([x' fliplr(x')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 )        % Below Lower Curve
+patch([x' fliplr(x')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
 hold off 
-legend(["Tracker", "Upper Bound", "Lower Bound"])
+legend(["Optimal Trajectory", "Upper Bound", "Lower Bound", "Out of Bounds"])
+xlabel("Time (s)", FontSize=12,FontWeight="bold")
+ylabel("Position (m)", FontSize=12,FontWeight="bold")
+title("Always tracking-in-range solution of one dimensional UAV", "FontSize",15)
