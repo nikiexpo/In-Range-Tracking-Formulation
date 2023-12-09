@@ -260,7 +260,7 @@ options.ECH.buffer_pct=0.1;
 % - Regularization priority ('reg_priority')    First change regularization paramters iteratively with warm starting resolve, then perform mesh refinement iterations
 % - Mesh Refinement priority ('MR_priority')    First perform mesh refinement iterations, then change regularization paramters iteratively with warm starting resolve
 % - Simultaneous ('simultaneous')               Perform mesh refinement and regulzarization paramter iterations simultaneously
-options.regstrategy='off';
+options.regstrategy='reg_priority';
 
 % Auto selection of h/hp method based on input formulation of the settings function call
 %---------------------------------------

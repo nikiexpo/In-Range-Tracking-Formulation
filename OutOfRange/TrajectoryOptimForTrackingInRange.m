@@ -115,9 +115,9 @@ problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
 
-problem.constraints.gl=[-inf]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gu=[0]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
+problem.constraints.gl=[]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gu=[]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gTol_neq=[]; % inequality constraint error bounds
 
 % OPTIONAL: define the time duration each constraint will be active, for
 % example (for ECH enabled in setings)
@@ -135,8 +135,8 @@ problem.constraints.bTol=[];
 problem.data.m=10;
 problem.data.delta = 2.5;
 % optional setting for automatic regularization
-% problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
-% problem.data.penalty.i=1; %starting weight
+problem.data.penalty.values=[1, 2, 3];
+problem.data.penalty.i=1; %starting weight
 
 pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
 tt = linspace(0,3000,length(pt));
@@ -188,16 +188,16 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %          Example: stageCost = 0*t;
 
 %------------- BEGIN CODE --------------
-
+soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y));
 %Define states and setpoints
-%x = x(:, 1); % Chaser position
+x = x(:, 1); % Chaser position
 
 %xt = data.XT;% Target position
+x_t = 5.*sin(2.*pi.*t./200)+9;
 
-%x_t = 5.*sin(2.*pi.*t./50);
-
-%stageCost = 200.*(x-x_t).^2;
-stageCost = 0.*t;
+f = (x-x_t).^2 - data.delta.^2;
+k = data.penalty.values(data.penalty.i);
+stageCost = soft_max(f,0,k);
 %------------- END OF CODE --------------
 
 
