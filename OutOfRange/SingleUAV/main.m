@@ -38,22 +38,21 @@ options= problem.settings(100);                  % Get options and solver settin
 % u1=speval(solution,'U',1,tt);
 % u2=speval(solution,'U',2,tt);
 % ...
-x_t = problem.data.XT;
-t = solution.T;
-xt = ppval(x_t,t);
-figure(1)
-plot(solution.T, solution.X(:,1))
-hold on
-plot(solution.T, solution.X(:,2))
-plot(solution.T, 5.*sin(2.*pi.*solution.T./200)  + problem.data.delta)
-plot(solution.T, 5.*sin(2.*pi.*solution.T./200)  - problem.data.delta)
-% plot(solution.T, xt + problem.data.delta)
-% plot(solution.T, xt - problem.data.delta)
-hold off 
-legend(["Tracker1", "Tracker2","Upper Bound", "Lower Bound"])
 
-figure(2)
-subplot(1,2,1)
-plot(solution.T, [solution.X(:,5), solution.X(:,6)])
-subplot(1,2,2)
-plot(solution.T, [solution.U(:,1), solution.U(:,2)])
+plot(solution.T, solution.X(:,1), LineWidth=2)
+ylim([0 18])
+hold on
+plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9, 'r--')
+% plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 + problem.data.delta)
+% plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 - problem.data.delta)
+
+x = solution.T;
+y2 = 5.*sin(2.*pi.*solution.T./200)+9 + problem.data.delta;
+y1 = 5.*sin(2.*pi.*solution.T./200)+9 - problem.data.delta;
+patch([x' fliplr(x')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 )        % Below Lower Curve
+patch([x' fliplr(x')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
+hold off 
+xlim([0 x(end)])
+legend(["Tracker", "Target", "Out-of-range"])
+xlabel("Time (s)", FontSize=12,FontWeight="bold")
+ylabel("Position (m)", FontSize=12,FontWeight="bold")
