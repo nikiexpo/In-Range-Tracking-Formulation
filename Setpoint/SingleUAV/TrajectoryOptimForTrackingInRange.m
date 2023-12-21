@@ -135,8 +135,8 @@ problem.constraints.bTol=[];
 problem.data.m=10;
 problem.data.delta = 2.5;
 % optional setting for automatic regularization
-% problem.data.penalty.values=[1, 2, 3];
-% problem.data.penalty.i=1; %starting weight
+%problem.data.penalty.values=[1, 2, 3];
+%problem.data.penalty.i=1; %starting weight
 
 pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
 tt = linspace(0,3000,length(pt));
@@ -188,7 +188,7 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %          Example: stageCost = 0*t;
 
 %------------- BEGIN CODE --------------
-soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
+% soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y));
 %Define states and setpoints
 x = x(:, 1); % Chaser position
 
@@ -197,8 +197,7 @@ x_t = 5.*sin(2.*pi.*t./200)+9;
 
 f = (x-x_t).^2 - data.delta.^2;
 % k = data.penalty.values(data.penalty.i);
-stageCost = soft_max(f,0,3);
-% stageCost = max(f,0);
+stageCost = f;
 %------------- END OF CODE --------------
 
 

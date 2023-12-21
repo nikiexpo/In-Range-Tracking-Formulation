@@ -43,7 +43,7 @@ guess.t0 = 0;
 % Final time. Let tf_min=tf_max if tf is fixed.
 problem.time.tf_min=1;     
 problem.time.tf_max=3000; 
-guess.tf=300;
+guess.tf=500;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -51,39 +51,40 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[0 0 100];
+problem.states.x0=[0 0 0 0 100 100];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[0 0 100];
-problem.states.x0u=[0 0 100];
+problem.states.x0l=[0 0 0 0 100 100];
+problem.states.x0u = [0 0 0 0 100 100];
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-100 -5 0]; 
-problem.states.xu=[100 5 100];
+problem.states.xl=[-100 -100 -5 -5 0 0]; 
+problem.states.xu=[100 100 5 5 100 100];
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[0.1 0.1 0.1]; 
-problem.states.xErrorTol_integral=[0.1 0.1 0.1]; 
+problem.states.xErrorTol_local=[0.1 0.1 0.1 0.1 0.1 0.1]; 
+problem.states.xErrorTol_integral=[0.1 0.1 0.1 0.1 0.1 0.1]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[0.1 0.5 0.1];
+problem.states.xConstraintTol=[0.1 0.1 0.5 0.5 0.1 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[-100 -5 50]; 
-problem.states.xfu=[100 5 100];
+problem.states.xfl=[-100 -100 -5 -5 50 50]; 
+problem.states.xfu=[100 100 5 5 100 100];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
 guess.states(:,1)=[0 0];
-
 guess.states(:,2)=[0 0];
-
-guess.states(:,3)=[100 50];
+guess.states(:,3)=[0 0];
+guess.states(:,4)=[0 0];
+guess.states(:,5)=[100 50];
+guess.states(:,6)=[100 50];
 
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
@@ -92,23 +93,24 @@ guess.states(:,3)=[100 50];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[-15];
-problem.inputs.uu=[15];
+problem.inputs.ul=[-15 -15];
+problem.inputs.uu=[15 15];
 
 % Bounds on the first control action
-problem.inputs.u0l=[-15];
-problem.inputs.u0u=[15];
+problem.inputs.u0l=[-15 -15];
+problem.inputs.u0u=[15 15];
 
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1];
+problem.inputs.uConstraintTol=[0.1, 0.1];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
 guess.inputs(:,1)=[0 0];
+guess.inputs(:,2)=[0 0];
 
 % Path constraint function 
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
@@ -135,8 +137,8 @@ problem.constraints.bTol=[];
 problem.data.m=10;
 problem.data.delta = 2.5;
 % optional setting for automatic regularization
-% problem.data.penalty.values=[1, 2, 3];
-% problem.data.penalty.i=1; %starting weight
+problem.data.penalty.values=[1, 2, 3];
+problem.data.penalty.i=1; %starting weight
 
 pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
 tt = linspace(0,3000,length(pt));
@@ -188,17 +190,16 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %          Example: stageCost = 0*t;
 
 %------------- BEGIN CODE --------------
-soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
+soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y));
 %Define states and setpoints
-x = x(:, 1); % Chaser position
-
+x1 = x(:, 1); % Chaser position
+x2 = x(:,2);
 %xt = data.XT;% Target position
-x_t = 5.*sin(2.*pi.*t./200)+9;
+x_t = 5.*sin(2.*pi.*t./200)+6;
 
-f = (x-x_t).^2 - data.delta.^2;
-% k = data.penalty.values(data.penalty.i);
-stageCost = soft_max(f,0,3);
-% stageCost = max(f,0);
+f = -soft_max( -(x1-x_t).^2, -(x2 - x_t).^2, 1) - data.delta.^2;
+%k = data.penalty.values(data.penalty.i);
+stageCost = soft_max(f,0,1);
 %------------- END OF CODE --------------
 
 
@@ -223,7 +224,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=-tf*10;
+boundaryCost=-tf;
 
 %------------- END OF CODE --------------
 

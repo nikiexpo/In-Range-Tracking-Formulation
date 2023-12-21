@@ -40,28 +40,27 @@ options= problem.settings(100);                  % Get options and solver settin
 % ...
 
 plot(solution.T, solution.X(:,1), LineWidth=2)
-ylim([0 18])
+ylim([-3 16])
 hold on
-plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9, 'r--')
+plot(solution.T, solution.X(:,2), LineWidth=2)
+plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+6, 'r--')
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 + problem.data.delta)
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 - problem.data.delta)
 
 x = solution.T;
-y2 = 5.*sin(2.*pi.*solution.T./200)+9 + problem.data.delta;
-y1 = 5.*sin(2.*pi.*solution.T./200)+9 - problem.data.delta;
+y2 = 5.*sin(2.*pi.*solution.T./200)+6 + problem.data.delta;
+y1 = 5.*sin(2.*pi.*solution.T./200)+6 - problem.data.delta;
 patch([x' fliplr(x')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 )        % Below Lower Curve
 patch([x' fliplr(x')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
 hold off 
 xlim([0 x(end)])
-legend(["Tracker", "Target", "Out-of-range"])
+legend(["Tracker 1", "Tracker 2" , "Target", "Out-of-range"])
 xlabel("Time (s)", FontSize=12,FontWeight="bold")
 ylabel("Position (m)", FontSize=12,FontWeight="bold")
 
-figure
-subplot(1,2,1)
-plot(solution.T, solution.X(:,2))
-subplot(1,2,2)
-plot(solution.T, solution.X(:,3))
 
-figure
-plot(solution.T, solution.U)
+figure(2)
+subplot(1,2,1)
+plot(solution.T, [solution.X(:,5), solution.X(:,6)])
+subplot(1,2,2)
+plot(solution.T, [solution.U(:,1), solution.U(:,2)])

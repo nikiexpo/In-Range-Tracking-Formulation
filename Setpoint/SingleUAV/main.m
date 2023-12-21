@@ -57,11 +57,13 @@ legend(["Tracker", "Target", "Out-of-range"])
 xlabel("Time (s)", FontSize=12,FontWeight="bold")
 ylabel("Position (m)", FontSize=12,FontWeight="bold")
 
+
 figure
 subplot(1,2,1)
 plot(solution.T, solution.X(:,2))
 subplot(1,2,2)
 plot(solution.T, solution.X(:,3))
+
 
 figure
 plot(solution.T, solution.U)

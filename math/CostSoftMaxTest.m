@@ -6,7 +6,7 @@ delta = 10; % range
 alpha = 1; % some scalar value should scaling be necessary in cost
 k = 1; % scalar value should scaling be necessary (underfull, overfull)
 out = soft_max((f.^2 - delta.^2).*alpha, 0,1);
-out2 = f.^2  
+out2 = f.^2;  
 
 [DX] = gradient(out,1);
 
