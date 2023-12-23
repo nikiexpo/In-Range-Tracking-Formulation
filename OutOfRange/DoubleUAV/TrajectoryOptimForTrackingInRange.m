@@ -43,7 +43,7 @@ guess.t0 = 0;
 % Final time. Let tf_min=tf_max if tf is fixed.
 problem.time.tf_min=1;     
 problem.time.tf_max=3000; 
-guess.tf=500;
+guess.tf=600;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -200,7 +200,7 @@ x_t = 5.*sin(2.*pi.*t./200)+6;
 
 f = -soft_max( -(x1-x_t).^2, -(x2 - x_t).^2, 1) - data.delta.^2;
 %k = data.penalty.values(data.penalty.i);
-stageCost = soft_max(f,0,2);
+stageCost = soft_max(f,0,3);
 %------------- END OF CODE --------------
 
 
@@ -225,7 +225,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=-tf*10;
+boundaryCost=-10.*tf;
 
 %------------- END OF CODE --------------
 

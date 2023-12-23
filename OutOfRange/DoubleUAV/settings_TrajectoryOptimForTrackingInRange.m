@@ -203,7 +203,7 @@ options.MRstrategy='aggressive';
 
 % Maximum number of mesh refinement iterations
 %---------------------------------------
-options.maxMRiter=1;
+options.maxMRiter=2;
 
 % Discountious Input
 %---------------------------------------
