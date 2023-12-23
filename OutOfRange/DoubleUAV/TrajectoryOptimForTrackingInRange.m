@@ -58,7 +58,7 @@ problem.states.x0l=[0 0 0 0 100 100];
 problem.states.x0u = [0 0 0 0 100 100];
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-100 -100 -5 -5 0 0]; 
+problem.states.xl=[-100 -100 -5 -5 50 50]; 
 problem.states.xu=[100 100 5 5 100 100];
 
 % State rate bounds. xrl=< x_dot <=xru
@@ -136,6 +136,7 @@ problem.constraints.bTol=[];
 % store the necessary problem parameters used in the functions
 problem.data.m=10;
 problem.data.delta = 2.5;
+problem.data.xb = 5;
 % optional setting for automatic regularization
 problem.data.penalty.values=[1, 2, 3];
 problem.data.penalty.i=1; %starting weight
@@ -190,7 +191,7 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %          Example: stageCost = 0*t;
 
 %------------- BEGIN CODE --------------
-soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y));
+soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
 %Define states and setpoints
 x1 = x(:, 1); % Chaser position
 x2 = x(:,2);
@@ -199,7 +200,7 @@ x_t = 5.*sin(2.*pi.*t./200)+6;
 
 f = -soft_max( -(x1-x_t).^2, -(x2 - x_t).^2, 1) - data.delta.^2;
 %k = data.penalty.values(data.penalty.i);
-stageCost = soft_max(f,0,1);
+stageCost = soft_max(f,0,2);
 %------------- END OF CODE --------------
 
 
@@ -224,7 +225,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=-tf;
+boundaryCost=-tf*10;
 
 %------------- END OF CODE --------------
 
