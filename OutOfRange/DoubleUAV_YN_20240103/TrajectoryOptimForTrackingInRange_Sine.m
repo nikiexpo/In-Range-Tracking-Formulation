@@ -1,4 +1,4 @@
-function [problem,guess] = TrajectoryOptimForTrackingInRange
+function [problem,guess] = TrajectoryOptimForTrackingInRange_Sine
 %myProblem - Template file for optimal control problem definition
 %
 %Syntax:  [problem,guess] = myProblem
@@ -51,15 +51,15 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[-18 -18 0 0 80 80];
+problem.states.x0=[18 -6 0 0 80 80];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
 problem.states.x0l=problem.states.x0;
 problem.states.x0u=problem.states.x0;
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[problem.states.x0(1) problem.states.x0(2) -5 -5 10 10]; 
-problem.states.xu=[100 100 5 5 100 100];
+problem.states.xl=[-100 problem.states.x0(2) -5 -5 10 10]; 
+problem.states.xu=[problem.states.x0(1) 100 5 5 100 100];
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
@@ -81,8 +81,8 @@ problem.states.xfu=[problem.states.x0(1) problem.states.x0(2) 5 5 100 100];
 % guess.time=[t0 ... tf];
 % guess.states(:,1)=[problem.states.x0(1) problem.states.x0(1)];
 % guess.states(:,2)=[problem.states.x0(2) problem.states.x0(2)];
-guess.states(:,1)=[0 0];
-guess.states(:,2)=[0 0];
+guess.states(:,1)=[10 10];
+guess.states(:,2)=[2 2];
 guess.states(:,3)=[0 0];
 guess.states(:,4)=[0 0];
 guess.states(:,5)=[100 50];
@@ -137,16 +137,19 @@ problem.constraints.bTol=[];
 
 % store the necessary problem parameters used in the functions
 problem.data.m=10;
-problem.data.delta = 8;
-problem.data.xb1 = problem.states.x0(1)+2;
+problem.data.delta = 3.5;
+problem.data.xb1 = problem.states.x0(1)-2;
 problem.data.xb2 = problem.states.x0(2)+2;
 % optional setting for automatic regularization
 problem.data.penalty.values=[1, 10, 40];
 problem.data.penalty.i=1; %starting weight
 
-pt = repmat([0 -5 -5 10 10 -7 -7 0],1,10);
-tt = linspace(0,3000,length(pt));
-% pt=5.*sin(2.*pi.*tt./200)+6;
+% pt = repmat([0 -5 -5 10 10 -7 -7 0],1,10);
+% tt = linspace(0,3000,length(pt));
+
+tt = linspace(0,problem.time.tf_max,50);
+pt=5.*sin(2.*pi.*tt./200)+6;
+
 % x_t = pchip(tt,pt);
 x_t = griddedInterpolant(tt,pt,'pchip','nearest');
 problem.data.XT = x_t;
