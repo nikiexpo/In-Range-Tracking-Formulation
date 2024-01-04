@@ -41,9 +41,9 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=500;     
-problem.time.tf_max=500; 
-guess.tf=500;
+problem.time.tf_min=1500;     
+problem.time.tf_max=1500; 
+guess.tf=1500;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -147,7 +147,7 @@ problem.data.penalty.i=1; %starting weight
 % pt = repmat([0 -5 -5 10 10 -7 -7 0],1,10);
 % tt = linspace(0,3000,length(pt));
 
-tt = linspace(0,problem.time.tf_max,50);
+tt = linspace(0,1500,150);
 pt=5.*sin(2.*pi.*tt./200)+6;
 
 % x_t = pchip(tt,pt);

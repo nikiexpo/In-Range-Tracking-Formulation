@@ -13,8 +13,8 @@
 %--------------------------------------------------------
 clear all;close all;format compact;
 
-[problem,guess]=TrajectoryOptimForTrackingInRange;          % Fetch the problem definition
-% [problem,guess]=TrajectoryOptimForTrackingInRange_Sine;          % Fetch the problem definition
+% [problem,guess]=TrajectoryOptimForTrackingInRange;          % Fetch the problem definition
+[problem,guess]=TrajectoryOptimForTrackingInRange_Sine;          % Fetch the problem definition
 
 options= problem.settings(300);                  % Get options and solver settings (h method)
 % options= problem.settings(Nps,Npd);            % Get options and solver settings (hp method)
@@ -45,8 +45,8 @@ u2=speval(solution,'U',2,tt);
 
 figure
 plot(tt, x1, LineWidth=2)
-% ylim([problem.states.x0(2) problem.states.x0(1)])
-ylim([problem.states.x0(2) 20])
+ylim([problem.states.x0(2) problem.states.x0(1)])
+% ylim([problem.states.x0(2) 20])
 hold on
 plot(tt, x2, LineWidth=2)
 plot(tt, problem.data.XT(tt), 'r--')

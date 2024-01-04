@@ -54,13 +54,13 @@ dx(:,3) = u1./m;
 dx(:,4) = u2./m;
 
 % without rest periods 
-dx(:,5) = -0.085 - (0.283*u1).^2 - 0.566*(v1).^2;
-dx(:,6) = -0.085 - (0.283*u2).^2 - 0.566*(v2).^2;
+% dx(:,5) = -0.085 - (0.283*u1).^2 - 0.566*(v1).^2;
+% dx(:,6) = -0.085 - (0.283*u2).^2 - 0.566*(v2).^2;
 
 % with rest periods
-% % dx(:,5) = -(0.7+tanh(-1.*(x1 - data.xb1))).*0.05 - (0.283*u1).^2 - 0.566*(v1).^2; % for charging location above the target
+dx(:,5) = -(0.7+tanh(-1.*(x1 - data.xb1))).*0.05 - (0.283*u1).^2 - 0.566*(v1).^2; % for charging location above the target
 % dx(:,5) = -(0.7+tanh(1.*(x1 - data.xb1))).*0.05 - (0.283*u1).^2 - 0.566*(v1).^2; % for charging location below the target
-% dx(:,6) = -(0.7+tanh(1.*(x2 - data.xb2))).*0.05 - (0.283*u2).^2 - 0.566*(v2).^2;
+dx(:,6) = -(0.7+tanh(1.*(x2 - data.xb2))).*0.05 - (0.283*u2).^2 - 0.566*(v2).^2;
 
 
 %------------- END OF CODE --------------
