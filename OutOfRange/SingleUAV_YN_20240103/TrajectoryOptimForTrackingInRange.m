@@ -41,9 +41,9 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=1500;     
-problem.time.tf_max=1500; 
-guess.tf=1500;
+problem.time.tf_min=500;     
+problem.time.tf_max=500; 
+guess.tf=500;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -200,19 +200,15 @@ k_R=1e05+(1.6e06-1e05)*(k_L-data.penalty.values(1))./(data.penalty.values(end)-d
 soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
 %Define states and setpoints
 x1 = x(:, 1); % Chaser position
-x2 = x(:,2);
 x_t = data.XT(t); % Target position
 
 JL1=tanh(k_L.*((x1-x_t)-data.delta))+tanh(k_L.*(-(x1-x_t)-data.delta));
-JL2=tanh(k_L.*((x2-x_t)-data.delta))+tanh(k_L.*(-(x2-x_t)-data.delta));
 % JR1=1/k_R.*(x1-x_t).^2;
 % JR2=1/k_R.*(x2-x_t).^2;
 JR1=1/k_R.*soft_max(((x1-x_t).^2-data.delta.^2)./data.delta.^2,0,1);
-JR2=1/k_R.*soft_max(((x2-x_t).^2-data.delta.^2)./data.delta.^2,0,1);
 J1=(JL1+JR1)*10;
-J2=(JL2+JR2)*10;
 % stageCost = min( (J1), (J2));
-stageCost = soft_max(-soft_max( -J1, -J2,1),-5,1);
+stageCost = soft_max(J1,-5,1);
 
 % f = -soft_max( -(x1-x_t).^2, -(x2 - x_t).^2, 1) - data.delta.^2;
 % %k = data.penalty.values(data.penalty.i);

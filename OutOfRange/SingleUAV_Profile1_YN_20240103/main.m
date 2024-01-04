@@ -13,8 +13,8 @@
 %--------------------------------------------------------
 clear all;close all;format compact;
 
-[problem,guess]=TrajectoryOptimForTrackingInRange;          % Fetch the problem definition
-% [problem,guess]=TrajectoryOptimForTrackingInRange_Sine;          % Fetch the problem definition
+% [problem,guess]=TrajectoryOptimForTrackingInRange;          % Fetch the problem definition
+[problem,guess]=TrajectoryOptimForTrackingInRange_Sine;          % Fetch the problem definition
 
 options= problem.settings(300);                  % Get options and solver settings (h method)
 % options= problem.settings(Nps,Npd);            % Get options and solver settings (hp method)
@@ -35,20 +35,20 @@ options= problem.settings(300);                  % Get options and solver settin
 % % Obtainting the interpolated solution from polynomials
 tt=transpose(linspace(solution.t0,solution.tf,1000));
 x1=speval(solution,'X',1,tt);
-x2=speval(solution,'X',2,tt);
-x5=speval(solution,'X',5,tt);
-x6=speval(solution,'X',6,tt);
+% x2=speval(solution,'X',2,tt);
+x5=speval(solution,'X',3,tt);
+% x6=speval(solution,'X',6,tt);
 % ...
 u1=speval(solution,'U',1,tt);
-u2=speval(solution,'U',2,tt);
+% u2=speval(solution,'U',2,tt);
 % ...
 
 figure
 plot(tt, x1, LineWidth=2)
 % ylim([problem.states.x0(2) problem.states.x0(1)])
-ylim([problem.states.x0(2) 20])
+ylim([-5 20])
 hold on
-plot(tt, x2, LineWidth=2)
+% plot(tt, x2, LineWidth=2)
 plot(tt, problem.data.XT(tt), 'r--')
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 + problem.data.delta)
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 - problem.data.delta)
@@ -62,16 +62,16 @@ patch([tt' fliplr(tt')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 
 patch([tt' fliplr(tt')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
 hold off 
 xlim([0 tt(end)])
-legend(["Tracker 1", "Tracker 2" , "Target", "Out-of-range"])
+legend(["Tracker 1",  "Target", "Out-of-range"])
 xlabel("Time (s)", FontSize=12,FontWeight="bold")
 ylabel("Position (m)", FontSize=12,FontWeight="bold")
 
 
 figure(2)
 subplot(1,2,1)
-plot(tt, [x5, x6])
+plot(tt, [x5])
 subplot(1,2,2)
-plot(tt, [u1, u2])
+plot(tt, [u1])
 
 figure(3)
 plot(solution.coll.T,solution.cost.L)
