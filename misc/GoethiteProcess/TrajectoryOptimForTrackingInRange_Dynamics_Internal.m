@@ -1,5 +1,5 @@
 
-function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
+function [dx] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
 % Template for specifying the dynamics for internal model 
 %
 % Syntax:  
@@ -34,81 +34,52 @@ function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p
 %Stored data
 
 %Define states
-c11 = x(:,1); 
-c21 = x(:,2);
-c31 = x(:,3); 
-c12 = x(:,4); 
-c22 = x(:,5);
-c32 = x(:,6); 
-c13 = x(:,7); 
-c23 = x(:,8);
-c33 = x(:,9); 
-c14 = x(:,10); 
-c24 = x(:,11);
-c34 = x(:,12); 
+c1 = x(:,1); 
+c2 = x(:,2);
+c3 = x(:,3); 
 
 %Define inputs
-u11 = u(:,1); 
-u21 = u(:,2); 
-u12 = u(:,3); 
-u22 = u(:,4); 
-u13 = u(:,5); 
-u23 = u(:,6); 
-u14 = u(:,7); 
-u24 = u(:,8); 
+u1 = u(:,1); 
+u2 = u(:,2); 
 
 %Define Data
 F = data.F;
 Fu = data.Fu;
 V = data.V;
+eta = data.eta;
+Ccu = data.Ccu;
+beta = data.beta;
+gamma = data.gamma;
+alpha = data.alpha;
+lambda = data.lambda;
+k1 = data.k1;
+k2 = data.k2;
+k3 = data.k3;
+Cfe2 = data.Cfe2;
+Cfe3 = data.Cfe3;
+pH = data.pH;
 
+Co2 = log(lambda.*u1 + 1);
+c0 = [Cfe2, Cfe3, 10^-pH];
 %Define reaction rates
-for i=1:4
 
-    if i == 1
-        v1(i) = k1(i) .* (1+eta(i) .* Ccu(i)).*(Co2(i)).^beta .* (c3(i)).^gamma;
-    else
-        v1(i) = k1(i) .* (1+eta(i) .* Ccu(i)).*(c1(i)).^alpha.*(Co2(i)).^beta .* (c3(i)).^gamma;
-    end
 
-    v2(i) = k2(i) .* c2(i);
-    v3(i) = k3(i) .* u2(i) .* c3(i);
-end
+v1 = k1 .* (1+eta .* Ccu).*(Co2).^beta .* (c3).^gamma;
+v2 = k2 .* c2;
+v3 = k3 .* u2 .* c3;
 
-for i = 1:4
+
+A1 = F./V;
     
-    if i == 1
-        A1 = [F./V, 0, 0;
-                0, F./V, 0;
-                0, 0, F./V];
-    else
-    
-        A1 = [(F+Fu)./V, 0 ,0;
-                0, (F+Fu)./V, 0;
-                0, 0, (F+Fu)./V];
-    end
-    
-    A2 = [-(F+Fu)./V, 0 ,0;
-            0, -(F+Fu)./V, 0;
-            0, 0, -(F+Fu)./V];
+A2 = -(F+Fu)./V;
 
-    phi(i) = [-4.*v1(i), 4.*v1(i) - v2(i), -4.*v1(i)+3.*v2(i)-2.*v3(i)]';
+phi = [-4.*v1, 4.*v1 - v2, -4.*v1+3.*v2-2.*v3];
 
-    cdot(:,i) = A1*c0(:,i) %CHANGE EVERYTHING TO NON MATRIX FORM FOR EASIER COMPUTING
-end
+cdot(:,1) = A1.*c0(1) + A2.*c1 + phi(:,1);
+cdot(:,2) = A1.*c0(2) + A2.*c2 + phi(:,2);
+cdot(:,3) = A1.*c0(3) + A2.*c3 + phi(:,3);
 
 
-%Define ODE right-hand side
-dx(:,1) = v1;
-dx(:,2) = u1./m;
-dx(:,3) = -0.1 - (0.283*u1).^2 - (0.566*v1).^2;
-
-% %Define Path constraints
-% g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
-% g_eq(:,2)=g_eq2(x1,...,u1,...p,t);
-% ...
-% 
-% 
-g_neq(:,1)= (x1 - xt).^2 - data.delta.^2;
+dx = cdot;
 
 %------------- END OF CODE --------------

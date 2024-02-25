@@ -145,7 +145,7 @@ problem.data.k2 = 1.5196;
 problem.data.k3 = 3.864;
 problem.data.alpha = 2;
 problem.data.beta = 1;
-problem.data.gamma = 1;
+problem.data.gamma = 
 problem.data.lambda = -0.36;
 problem.data.eta = 1; %Guessed
 
