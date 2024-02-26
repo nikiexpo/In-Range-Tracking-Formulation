@@ -75,7 +75,7 @@ problem.states.xConstraintTol=[0.1 0.1 0.1];
 
 % Terminal state bounds. xfl=< xf <=xfu
 problem.states.xfl=[6/55.845, 0, 10^-3.5]; 
-problem.states.xfu=[8/55.845, 2/55.845, 10^-2.7];
+problem.states.xfu=[10/55.845, 2/55.845, 10^-2.7];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
@@ -138,7 +138,7 @@ problem.data.Fu = 49; %m3/h
 problem.data.F = 150; %m3/h 
 problem.data.Cfe3 = 0.0195;
 problem.data.Cfe2 = 0.1964;
-problem.data.Ccu = 0.03/63.546; %g/L --> mol/L
+problem.data.Ccu = 0.03; %g/L 
 problem.data.pH = 2.1;
 problem.data.k1 = 1.0908e-4;
 problem.data.k2 = 1.5196;
@@ -147,7 +147,7 @@ problem.data.alpha = 2;
 problem.data.beta = 1;
 problem.data.gamma = 1;
 problem.data.lambda = -0.36;
-problem.data.eta = 1; %Guessed
+problem.data.eta = 1.9; %Guessed
 
 % Get function handles and return to Main.m
 problem.data.InternalDynamics=InternalDynamics;
@@ -194,8 +194,10 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 
 %Define states and setpoints
 
-DCfe2 = 7.5 / 55.845;
+DCfe2 = 9.25 / 55.845;
+% pH = 2.7;
 stageCost = 20.*u(:,1) + 44.*u(:,2) + 100.*(DCfe2 - x(:,1)).^2;
+% stageCost = 20.*u(:,1) + 44.*u(:,2) + 100.*(pH - (-log10(x(:,3)))).^2;
 %------------- END OF CODE --------------
 
 
@@ -221,10 +223,9 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %------------- BEGIN CODE --------------
 
 
-DCfe3 = 0.3 / 55.845;
 
 
-boundaryCost= 100.*(DCfe3 - xf(2)).^2;
+boundaryCost= 0;
 
 %------------- END OF CODE --------------
 
