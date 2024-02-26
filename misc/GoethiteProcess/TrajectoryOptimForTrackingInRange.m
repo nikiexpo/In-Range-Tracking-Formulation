@@ -92,12 +92,12 @@ guess.states(:,3)=[10^-2.1 10^-3.5];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[0 0];
-problem.inputs.uu=[100 100];
+problem.inputs.ul=[1 1];
+problem.inputs.uu=[50 50];
 
 % Bounds on the first control action
-problem.inputs.u0l=[0 0];
-problem.inputs.u0u=[150 100];
+problem.inputs.u0l=[1 1];
+problem.inputs.u0u=[50 50];
 
 % Input rate bounds
 problem.inputs.url=[]; 
@@ -133,12 +133,12 @@ problem.constraints.bu=[];
 problem.constraints.bTol=[]; 
 
 % store the necessary problem parameters used in the functions
-problem.data.V = 300;
-problem.data.Fu = 49;
-problem.data.F = 150;
+problem.data.V = 300; %m3
+problem.data.Fu = 49; %m3/h 
+problem.data.F = 150; %m3/h 
 problem.data.Cfe3 = 0.0195;
 problem.data.Cfe2 = 0.1964;
-problem.data.Ccu = 0.03;
+problem.data.Ccu = 0.03; %g/L
 problem.data.pH = 2.1;
 problem.data.k1 = 1.0908e-4;
 problem.data.k2 = 1.5196;
@@ -193,14 +193,9 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Define states and setpoints
-%x = x(:, 1); % Chaser position
 
-%xt = data.XT;% Target position
-
-%x_t = 5.*sin(2.*pi.*t./50);
-
-%stageCost = 200.*(x-x_t).^2;
-stageCost = 20.*u(:,1) + 44.*u(:,2);
+DCfe2 = 7.5 / 55.845;
+stageCost = 20.*u(:,1) + 44.*u(:,2) + 100.*(DCfe2 - x(:,1)).^2;
 %------------- END OF CODE --------------
 
 
@@ -225,11 +220,11 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-DCfe2 = 7.5 / 55.845;
+
 DCfe3 = 0.3 / 55.845;
 
 
-boundaryCost= 100.*(DCfe3 - xf(2)).^2 + 100.*(DCfe2 - xf(1)).^2;
+boundaryCost= 100.*(DCfe3 - xf(2)).^2;
 
 %------------- END OF CODE --------------
 
