@@ -42,10 +42,19 @@ options= problem.settings(100);                  % Get options and solver settin
 figure
 subplot(2,1,1)
 plot(solution.T, solution.X(:,1))
+hold on
+plot(solution.T, problem.data.xd.*ones(size(solution.T)), Color=[1 0 0])
+hold off
+grid on 
+title("Glucose plot")
+legend(["Glucose levels", "Setpoint"])
 
 subplot(2,1,2)
 plot(solution.T, solution.X(:,2))
-
+title("Insulin")
+grid on
 
 figure
 plot(solution.T, solution.U(:,1))
+title("Rate of infusion of exogenous harmones")
+grid on
