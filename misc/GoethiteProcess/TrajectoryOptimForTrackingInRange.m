@@ -92,12 +92,12 @@ guess.states(:,3)=[10^-2.1 10^-3.5];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[1 1];
-problem.inputs.uu=[50 50];
+problem.inputs.ul=[0 0];
+problem.inputs.uu=[2.7 5];
 
 % Bounds on the first control action
-problem.inputs.u0l=[1 1];
-problem.inputs.u0u=[50 50];
+problem.inputs.u0l=[0 0];
+problem.inputs.u0u=[2.7 5];
 
 % Input rate bounds
 problem.inputs.url=[]; 
@@ -138,7 +138,7 @@ problem.data.Fu = 49; %m3/h
 problem.data.F = 150; %m3/h 
 problem.data.Cfe3 = 0.0195;
 problem.data.Cfe2 = 0.1964;
-problem.data.Ccu = 0.03; %g/L
+problem.data.Ccu = 0.03/63.546; %g/L --> mol/L
 problem.data.pH = 2.1;
 problem.data.k1 = 1.0908e-4;
 problem.data.k2 = 1.5196;
