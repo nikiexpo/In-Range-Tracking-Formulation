@@ -39,18 +39,43 @@ options= problem.settings(100);                  % Get options and solver settin
 % u2=speval(solution,'U',2,tt);
 % ...
 
-plot(solution.T, solution.X(:,1), LineWidth=3)
-% axis([0 solution.T(end)    -10 10])
-% hold on
-% plot(solution.T, 5.*sin(2.*pi.*solution.T./200), 'r--')
-% % plot(solution.T, 5.*sin(2.*pi.*solution.T./200) + problem.data.delta)
-% % plot(solution.T, 5.*sin(2.*pi.*solution.T./200) - problem.data.delta)
-% x = solution.T;
-% y2 = 5.*sin(2.*pi.*solution.T./200) + problem.data.delta;
-% y1 = 5.*sin(2.*pi.*solution.T./200) - problem.data.delta;
-% patch([x' fliplr(x')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 )        % Below Lower Curve
-% patch([x' fliplr(x')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
-% hold off 
-% legend(["Tracker", "Target" , "Out of Bounds"])
-% xlabel("Time (s)", FontSize=12,FontWeight="bold")
-% ylabel("Position (m)", FontSize=12,FontWeight="bold")
+figure
+plot(solution.T, solution.X(:,1).*55.845, LineWidth=3)
+hold on
+plot(solution.T, ones(size(solution.T)).*problem.states.xl(:,1).*55.85, "Color", [1,0,0])
+plot(solution.T, ones(size(solution.T)).*problem.states.xu(:,1).*55.85, "Color", [1,0,0])
+hold off
+title("Fe2+ concentration (g/L)")
+
+figure
+plot(solution.T,solution.X(:,2).*55.845, LineWidth=3)
+hold on
+plot(solution.T, ones(size(solution.T)).*problem.states.xl(:,2).*55.85, "Color", [1,0,0])
+plot(solution.T, ones(size(solution.T)).*problem.states.xu(:,2).*55.85, "Color", [1,0,0])
+hold off
+title("Fe3+ concentration (g/L)")
+
+figure
+plot(solution.T,-log10(solution.X(:,3)), LineWidth=3)
+hold on
+plot(solution.T, ones(size(solution.T)).*-log10(problem.states.xl(:,3)), "Color", [1,0,0])
+plot(solution.T, ones(size(solution.T)).*-log10(problem.states.xu(:,3)), "Color", [1,0,0])
+hold off
+title("H+ concentration (pH)")
+
+figure
+subplot(1,2,1)
+plot(solution.T,solution.U(:,1), LineWidth=2)
+hold on
+plot(solution.T, ones(size(solution.T)).*problem.inputs.ul(:,1), "Color", [1,0,0])
+plot(solution.T, ones(size(solution.T)).*problem.inputs.uu(:,1), "Color", [1,0,0])
+hold off
+
+subplot(1,2,2)
+plot(solution.T,solution.U(:,2), LineWidth=2)
+hold on
+plot(solution.T, ones(size(solution.T)).*problem.inputs.ul(:,2), "Color", [1,0,0])
+plot(solution.T, ones(size(solution.T)).*problem.inputs.uu(:,2), "Color", [1,0,0])
+hold off
+
+title("Inputs")

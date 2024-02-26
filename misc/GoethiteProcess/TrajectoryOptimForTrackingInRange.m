@@ -97,7 +97,7 @@ problem.inputs.uu=[100 100];
 
 % Bounds on the first control action
 problem.inputs.u0l=[0 0];
-problem.inputs.u0u=[100 100];
+problem.inputs.u0u=[150 100];
 
 % Input rate bounds
 problem.inputs.url=[]; 
@@ -225,7 +225,11 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=0;
+DCfe2 = 7.5 / 55.845;
+DCfe3 = 0.3 / 55.845;
+
+
+boundaryCost= 100.*(DCfe3 - xf(2)).^2 + 100.*(DCfe2 - xf(1)).^2;
 
 %------------- END OF CODE --------------
 
