@@ -41,9 +41,9 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=300/(150+49) * 60;     
-problem.time.tf_max=300/(150+49) * 60; 
-guess.tf=300/(150+49) * 60;
+problem.time.tf_min=300;     
+problem.time.tf_max=300; 
+guess.tf=300;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -51,39 +51,39 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[0.1964 0.0195 10^-2.1];
+problem.states.x0=[300 0];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[0.1964 0.0195 10^-2.1];
-problem.states.x0u=[0.1964 0.0195 10^-2.1];
+problem.states.x0l=[300 0];
+problem.states.x0u=[300 0];
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[0.1074, 0, 10^-3.6]; 
-problem.states.xu=[0.2149, 0.1, 10^-2];
+problem.states.xl=[0 0]; 
+problem.states.xu=[1000 1000]; % --> dont know if true
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[0.1 0.1 0.1]; 
-problem.states.xErrorTol_integral=[0.1 0.1 0.1]; 
+problem.states.xErrorTol_local=[0.1 0.1]; 
+problem.states.xErrorTol_integral=[0.1 0.1]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[0.1 0.1 0.1];
+problem.states.xConstraintTol=[0.1 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[3/55.845, 0, 10^-3.5]; 
-problem.states.xfu=[12/55.845, 2/55.845, 10^-2.7];
+problem.states.xfl=[- ]; 
+problem.states.xfu=[6 ];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
-guess.states(:,1)=[0.1964 6/55.845];
+guess.states(:,1)=[0 0];
 
-guess.states(:,2)=[0.0195 0];
+guess.states(:,2)=[0 0];
 
-guess.states(:,3)=[10^-2.1 10^-3.5];
+guess.states(:,3)=[100 50];
 
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
@@ -92,33 +92,32 @@ guess.states(:,3)=[10^-2.1 10^-3.5];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[0 0];
-problem.inputs.uu=[2.7 5];
+problem.inputs.ul=[-15];
+problem.inputs.uu=[15];
 
 % Bounds on the first control action
-problem.inputs.u0l=[0 0];
-problem.inputs.u0u=[2.7 5];
+problem.inputs.u0l=[-15];
+problem.inputs.u0u=[15];
 
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1 0.1];
+problem.inputs.uConstraintTol=[0.1];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
 guess.inputs(:,1)=[0 0];
-guess.inputs(:,2)=[0 0];
 
 % Path constraint function 
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
 
-problem.constraints.gl=[]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gu=[]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gTol_neq=[]; % inequality constraint error bounds
+problem.constraints.gl=[-inf]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gu=[0]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
 
 % OPTIONAL: define the time duration each constraint will be active, for
 % example (for ECH enabled in setings)
@@ -133,21 +132,22 @@ problem.constraints.bu=[];
 problem.constraints.bTol=[]; 
 
 % store the necessary problem parameters used in the functions
-problem.data.V = 300; %m3
-problem.data.Fu = 49; %m3/h 
-problem.data.F = 150; %m3/h 
-problem.data.Cfe3 = 0.0195;
-problem.data.Cfe2 = 0.1964;
-problem.data.Ccu = 0.03; %g/L 
-problem.data.pH = 2.1;
-problem.data.k1 = 1.0908e-4;
-problem.data.k2 = 1.5196;
-problem.data.k3 = 3.864;
-problem.data.alpha = 2;
-problem.data.beta = 1;
-problem.data.gamma = 1;
-problem.data.lambda = -0.36;
-problem.data.eta = 1.9; %Guessed
+
+problem.data.m1 = 0.0009;
+problem.data.m2 = 0.0031;
+problem.data.m3 = 0.0415;
+problem.data.m4 = 0.0;
+
+problem.data.rho = 10;
+problem.data.xd = 100;
+
+
+% optional setting for automatic regularization
+% problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
+% problem.data.penalty.i=1; %starting weight
+
+
+
 
 % Get function handles and return to Main.m
 problem.data.InternalDynamics=InternalDynamics;
@@ -193,11 +193,12 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Define states and setpoints
+x1 = x(:, 1); 
+xd = data.xd;
+rho = data.rho;
+u1 = u(:,1);
 
-DCfe2 = 9.25 / 55.845;
-pH = 2.7;
-stageCost = 20.*u(:,1) + 44.*u(:,2) + 100.*(DCfe2 - x(:,1)).^2;
-% stageCost = 20.*u(:,1) + 44.*u(:,2) + 100.*(pH - (-log10(x(:,3)))).^2;
+stageCost = (x1-xd).^2 + rho.*u1.^2;
 %------------- END OF CODE --------------
 
 
@@ -222,11 +223,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-
-DCfe3 = 0.3 / 55.845;
-
-
-boundaryCost= 100.*(DCfe3 - xf(2)).^2;
+boundaryCost=0;
 
 %------------- END OF CODE --------------
 

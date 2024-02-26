@@ -1,5 +1,5 @@
 
-function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
+function [dx] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
 % Template for specifying the dynamics for internal model 
 %
 % Syntax:  
@@ -32,54 +32,31 @@ function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p
 %------------- BEGIN CODE --------------
 
 %Stored data
+% G0 = data.G0;
+% H0 = data.H0;
+m1 = data.m1;
+m2 = data.m2;
+m3 = data.m3;
+m4 = data.m4;
 
 %Define states
-c1 = x(:,1); 
-c2 = x(:,2);
-c3 = x(:,3); 
+x1 = x(:,1);
+x2 = x(:,2);
 
 %Define inputs
-u1 = u(:,1); 
-u2 = u(:,2); 
-
-%Define Data
-F = data.F;
-Fu = data.Fu;
-V = data.V;
-eta = data.eta;
-Ccu = data.Ccu;
-beta = data.beta;
-gamma = data.gamma;
-alpha = data.alpha;
-lambda = data.lambda;
-k1 = data.k1;
-k2 = data.k2;
-k3 = data.k3;
-Cfe2 = data.Cfe2;
-Cfe3 = data.Cfe3;
-pH = data.pH;
-
-Co2 = log(lambda.*u1 + 1);
-c0 = [Cfe2, Cfe3, CH];
-%Define reaction rates
+u1 = u(:,1);
 
 
-v1 = k1 .* (1+eta .* Ccu).*(Co2).^beta .* (c3).^gamma;
-v2 = k2 .* c2;
-v3 = k3 .* u2 .* c3;
+%Define ODE right-hand side
+dx(:,1) = -m1.*x1 - m2.*x2;
+dx(:,2) = -m3.*x2 + m4.*x1 + u1;
 
+% %Define Path constraints
+% g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
+% g_eq(:,2)=g_eq2(x1,...,u1,...p,t);
+% ...
+% 
+% 
 
-A1 = F./V;
-    
-A2 = -(F+Fu)./V;
-
-phi = [-4.*v1, 4.*v1 - v2, -4.*v1+3.*v2-2.*v3];
-
-cdot(:,1) = A1.*c0(1) + A2.*c1 + phi(:,1);
-cdot(:,2) = A1.*c0(2) + A2.*c2 + phi(:,2);
-cdot(:,3) = A1.*c0(3) + A2.*c3 + phi(:,3);
-
-
-dx = cdot;
 
 %------------- END OF CODE --------------

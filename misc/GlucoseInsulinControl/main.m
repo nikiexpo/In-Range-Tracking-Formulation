@@ -40,19 +40,12 @@ options= problem.settings(100);                  % Get options and solver settin
 % ...
 
 figure
-plot(solution.T, solution.X(:,1).*55.845, LineWidth=3)
-hold on
-plot(solution.T, problem.states.)
-title("Fe2+ concentration (g/L)")
+subplot(2,1,1)
+plot(solution.T, solution.X(:,1))
+
+subplot(2,1,2)
+plot(solution.T, solution.X(:,2))
+
+
 figure
-plot(solution.T,solution.X(:,2).*55.845, LineWidth=3)
-title("Fe3+ concentration (g/L)")
-figure
-plot(solution.T,log10(solution.X(:,3)), LineWidth=3)
-title("H+ concentration (pH)")
-figure
-subplot(1,2,1)
-plot(solution.T,solution.U(:,1), LineWidth=2)
-subplot(1,2,2)
-plot(solution.T,solution.U(:,2), LineWidth=2)
-title("Inputs")
+plot(solution.T, solution.U(:,1))
