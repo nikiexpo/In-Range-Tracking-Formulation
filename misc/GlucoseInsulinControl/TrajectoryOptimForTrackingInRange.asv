@@ -41,9 +41,9 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=300;     
-problem.time.tf_max=300; 
-guess.tf=300;
+problem.time.tf_min=600;     
+problem.time.tf_max=600; 
+guess.tf=600;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -74,16 +74,15 @@ problem.states.xConstraintTol=[0.1 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[- ]; 
-problem.states.xfu=[6 ];
+problem.states.xfl=[50 0]; 
+problem.states.xfu=[150 100];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
-guess.states(:,1)=[0 0];
+guess.states(:,1)=[300 100];
 
 guess.states(:,2)=[0 0];
 
-guess.states(:,3)=[100 50];
 
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
@@ -92,12 +91,12 @@ guess.states(:,3)=[100 50];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[-15];
-problem.inputs.uu=[15];
+problem.inputs.ul=[0];
+problem.inputs.uu=[150];
 
 % Bounds on the first control action
-problem.inputs.u0l=[-15];
-problem.inputs.u0u=[15];
+problem.inputs.u0l=[0];
+problem.inputs.u0u=[150];
 
 % Input rate bounds
 problem.inputs.url=[]; 
@@ -115,9 +114,9 @@ problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
 
-problem.constraints.gl=[-inf]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gu=[0]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
+problem.constraints.gl=[]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gu=[]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gTol_neq=[]; % inequality constraint error bounds
 
 % OPTIONAL: define the time duration each constraint will be active, for
 % example (for ECH enabled in setings)
@@ -194,10 +193,22 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 
 %Define states and setpoints
 x1 = x(:, 1); 
-xd = data.xd;
-rho = data.rho;
 u1 = u(:,1);
 
+xd = data.xd;
+rho = data.rho;
+delta = data.delta;
+
+%Define constants
+KL = 1;
+KR = 1;
+
+%Define softmax
+soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
+
+%Define tracking-in-range indicator function
+LH = tanh(KL.*((x1 - xd)-delta)) + tanh(KL.*(-(x1 - xd)-delta));
+LR = 1/KR.*soft_max(((x1-xd).^2 - delta.^2)./delta.^2, 0, 1);
 stageCost = (x1-xd).^2 + rho.*u1.^2;
 %------------- END OF CODE --------------
 

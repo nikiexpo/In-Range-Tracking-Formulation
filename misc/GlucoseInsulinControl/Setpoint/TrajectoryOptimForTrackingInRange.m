@@ -139,7 +139,6 @@ problem.data.m4 = 0.0;
 
 problem.data.rho = 10;
 problem.data.xd = 100;
-problem.data.delta = 10;
 
 
 % optional setting for automatic regularization
@@ -194,23 +193,11 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 
 %Define states and setpoints
 x1 = x(:, 1); 
-u1 = u(:,1);
-
 xd = data.xd;
 rho = data.rho;
-delta = data.delta;
+u1 = u(:,1);
 
-%Define constants
-KL = 1;
-KR = 1;
-
-%Define softmax
-soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
-
-%Define tracking-in-range indicator function
-LH = tanh(KL.*((x1 - xd)-delta)) + tanh(KL.*(-(x1 - xd)-delta));
-LR = 1/KR.*soft_max(((x1-xd).^2 - delta.^2)./delta.^2, 0, 1);
-stageCost = 10.*(LH + LR) + rho.*u1.^2;
+stageCost = (x1-xd).^2 + rho.*u1.^2;
 %------------- END OF CODE --------------
 
 
