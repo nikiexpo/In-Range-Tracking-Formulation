@@ -41,9 +41,9 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=800;     
-problem.time.tf_max=800; 
-guess.tf=800;
+problem.time.tf_min=300;     
+problem.time.tf_max=300; 
+guess.tf=300;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -51,42 +51,41 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[-18 -18 0 0 80 80];
+problem.states.x0=[0 0 0 0.01 0 0 203796];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=problem.states.x0;
-problem.states.x0u=problem.states.x0;
+problem.states.x0l=[0 0 0 0.01 0 -pi 203796]; 
+problem.states.x0u=[0 0 0 0.01 0  pi 203796]; 
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[problem.states.x0(1) problem.states.x0(2) -5 -5 10 10]; 
-problem.states.xu=[100 100 5 5 100 100];
+problem.states.xl=  [-110  -110   0.0 0.01 -4 -pi 0];
+problem.states.xu=  [110 110 130  18  4  pi 203796];
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[0.1 0.1 0.1 0.1 0.1 0.1]; 
-problem.states.xErrorTol_integral=[0.1 0.1 0.1 0.1 0.1 0.1]; 
+problem.states.xErrorTol_local=[1 1 1 1e-1 1e-1 deg2rad(5) 100]; 
+problem.states.xErrorTol_integral=[1 1 1 1e-1 1e-1 deg2rad(5) 100]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[0.1 0.1 0.5 0.5 0.1 0.1];
+problem.states.xConstraintTol=[1 1 1 1e-1 1e-1 deg2rad(5) 100];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[problem.states.x0(1) problem.states.x0(2) -5 -5 10 10]; 
-problem.states.xfu=[problem.states.x0(1) problem.states.x0(2) 5 5 100 100];
+problem.states.xfl=[-110  -110   0.0 0.01 -4 -pi 0]; 
+problem.states.xfu=[110 110 130  18  4  pi 203796];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
-% guess.states(:,1)=[problem.states.x0(1) problem.states.x0(1)];
-% guess.states(:,2)=[problem.states.x0(2) problem.states.x0(2)];
 guess.states(:,1)=[0 0];
 guess.states(:,2)=[0 0];
 guess.states(:,3)=[0 0];
-guess.states(:,4)=[0 0];
-guess.states(:,5)=[100 50];
-guess.states(:,6)=[100 50];
+guess.states(:,4)=[12 12];
+guess.states(:,5)=[4 -4];
+guess.states(:,6)=[deg2rad(45) deg2rad(45)];
+guess.states(:,7)=[203796 0.4*203796];
 
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
@@ -95,24 +94,25 @@ guess.states(:,6)=[100 50];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[-15 -15];
-problem.inputs.uu=[15 15];
+problem.inputs.ul=[0 -pi/2 deg2rad(-35)]; % throttle (%), thrust orientation (theta tilde), alpha (AoA)
+problem.inputs.uu=[100  pi/2  deg2rad(35)];
 
 % Bounds on the first control action
-problem.inputs.u0l=[-15 -15];
-problem.inputs.u0u=[15 15];
+problem.inputs.u0l=[0 -pi/2 deg2rad(-35)];
+problem.inputs.u0u=[100  pi/2  deg2rad(35)]; 
 
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1, 0.1];
+problem.inputs.uConstraintTol=[0.1 deg2rad(5) deg2rad(3)];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
-guess.inputs(:,1)=[0 0];
-guess.inputs(:,2)=[0 0];
+guess.inputs(:,1)=[1 1];
+guess.inputs(:,2)=[deg2rad(45) deg2rad(45) ];
+guess.inputs(:,3)=[deg2rad(35) deg2rad(35) ];
 
 % Path constraint function 
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
@@ -136,20 +136,45 @@ problem.constraints.bu=[];
 problem.constraints.bTol=[]; 
 
 % store the necessary problem parameters used in the functions
-problem.data.m=10;
-problem.data.delta = 8;
-problem.data.xb1 = problem.states.x0(1)+2;
-problem.data.xb2 = problem.states.x0(2)+2;
-% optional setting for automatic regularization
-problem.data.penalty.values=[1, 10, 40];
-problem.data.penalty.i=1; %starting weight
+problem.data.m=1.282;
+problem.data.g = 9.81;
+problem.data.delta = 2.5; % -- change the range here
+problem.data.k1 = 0.8554;
+problem.data.k2 = 0.3051;
+problem.data.c1 = 2.8037;
+problem.data.c2 = 0.3177;
+problem.data.c3 =0;
+problem.data.c4 = 0.0296;
+problem.data.c5 = 0.0279;
+problem.data.c6 = 0;
+problem.data.dia = 10/12; %ft
+problem.data.gammaLookup = [0 0; 30, 187/706; 45, 282/706; 65, 438/706; 75, 542/706; 100, 706/706];
+problem.data.effLookup = [0.6, 0.79; 0.8, 0.85; 1, 0.88; 1.2, 0.86; 1.4, 0.77];
+problem.data.maxT = 4 * 0.706 * 9.81*(10545/8498); %N
+problem.data.RPM_max = 10545;
 
-pt = repmat([0 -5 -5 10 10 -7 -7 0],1,10);
-tt = linspace(0,3000,length(pt));
-% pt=5.*sin(2.*pi.*tt./200)+6;
+% optional setting for automatic regularization
+% problem.data.penalty.values=[1, 2, 3];
+% problem.data.penalty.i=1; %starting weight
+
+% pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
+% tt = linspace(0,3000,length(pt));
+% 
 % x_t = pchip(tt,pt);
-x_t = griddedInterpolant(tt,pt,'pchip','nearest');
+% 
+% problem.data.XT = x_t;
+
+% target trajectory -- From Bazili 
+pt_x = repmat([0 17.04 66.99 146.45 250 370.59 500 1000-370.59 750 1000-146.45 1000-66.99 1000-17.04 1000],1,1);
+pt_y = repmat([0 129.41 250 353.55 433.04 482.96 500 1000-482.96 1000-433.04 1000-353.55 750 1000-129.41 1000],1,1);
+tt = linspace(0,guess.tf,length(pt_x));
+
+x_t = pchip(tt,pt_x);
+y_t = pchip(tt,pt_y);
+
 problem.data.XT = x_t;
+problem.data.YT = y_t;
+
 
 
 % Get function handles and return to Main.m
@@ -194,29 +219,24 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %          Example: stageCost = 0*t;
 
 %------------- BEGIN CODE --------------
-k_L=data.penalty.values(data.penalty.i);
-k_R=1e05+(1.6e06-1e05)*(k_L-data.penalty.values(1))./(data.penalty.values(end)-data.penalty.values(1));
-
 soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
 %Define states and setpoints
-x1 = x(:, 1); % Chaser position
-x2 = x(:,2);
-x_t = data.XT(t); % Target position
+xpos = x(:, 1); % Chaser position
+ypos = x(:, 2); 
+zpos = x(:, 3);
 
-JL1=tanh(k_L.*((x1-x_t)-data.delta))+tanh(k_L.*(-(x1-x_t)-data.delta));
-JL2=tanh(k_L.*((x2-x_t)-data.delta))+tanh(k_L.*(-(x2-x_t)-data.delta));
-% JR1=1/k_R.*(x1-x_t).^2;
-% JR2=1/k_R.*(x2-x_t).^2;
-JR1=1/k_R.*soft_max(((x1-x_t).^2-data.delta.^2)./data.delta.^2,0,1);
-JR2=1/k_R.*soft_max(((x2-x_t).^2-data.delta.^2)./data.delta.^2,0,1);
-J1=(JL1+JR1)*10;
-J2=(JL2+JR2)*10;
-% stageCost = min( (J1), (J2));
-stageCost = soft_max(-soft_max( -J1, -J2,1),-5,1);
+xt = ppval(data.XT, t); % Target x position
+yt = ppval(data.YT, t); % Target y position
+% x_t = 5.*sin(2.*pi.*t./200)+9;
 
-% f = -soft_max( -(x1-x_t).^2, -(x2 - x_t).^2, 1) - data.delta.^2;
-% %k = data.penalty.values(data.penalty.i);
-% stageCost = soft_max(f,0,3);
+fx = (xpos-xt).^2 - data.delta.^2;
+fy = (ypos-yt).^2 - data.delta.^2;
+% k = data.penalty.values(data.penalty.i);
+% stageCost = soft_max( soft_max(fx, fy, 1/50) ,0, 1/50);
+% stageCost = fx + fy;
+% d = 1;
+stageCost =(xpos-xt).^2 + (ypos-yt).^2;
+% stageCost = max(f,0);
 %------------- END OF CODE --------------
 
 
@@ -240,8 +260,9 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %    boundaryCost - Scalar boundary cost
 %
 %------------- BEGIN CODE --------------
-boundaryCost=(-xf(5)-xf(6))*tf/3000;
-% boundaryCost=0;
+
+boundaryCost=-10.*xf(7);
+
 %------------- END OF CODE --------------
 
 function bc=b_unscaled(x0,xf,u0,uf,p,t0,tf,data,varargin)

@@ -62,16 +62,27 @@ patch([tt' fliplr(tt')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 
 patch([tt' fliplr(tt')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
 hold off 
 xlim([0 tt(end)])
-legend(["Tracker 1", "Tracker 2" , "Target", "Out-of-range"])
-xlabel("Time (s)", FontSize=12,FontWeight="bold")
-ylabel("Position (m)", FontSize=12,FontWeight="bold")
-
+legend(["Tracker 1", "Tracker 2" , "Target", "Out-of-range"], Interpreter="latex")
+xlabel("Time (s)", FontSize=12,Interpreter="latex")
+ylabel("Position (m)", FontSize=12,Interpreter="latex")
 
 figure(2)
+plot(tt, [x5, x6], LineWidth=2)
+hold on
+plot(tt, 10.*ones(size(tt)), 'r--')
+plot(tt, 100.*ones(size(tt)), 'r--')
+hold off
+ylim([0 105])
+legend(["Tracker 1", "Tracker 2", "Bounds"], Interpreter="latex")
+xlabel("Time (s)", FontSize=12,Interpreter="latex")
+ylabel("Energy state (\%)", FontSize=12,Interpreter="latex")
+grid on
+
+figure(3)
 subplot(1,2,1)
 plot(tt, [x5, x6])
 subplot(1,2,2)
 plot(tt, [u1, u2])
 
-figure(3)
+figure(4)
 plot(solution.coll.T,solution.cost.L)

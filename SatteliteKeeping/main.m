@@ -52,5 +52,5 @@ patch([x' fliplr(x')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 ) 
 patch([x' fliplr(x')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
 hold off 
 legend(["Tracker", "Target" , "Out of Bounds"])
-xlabel("Time (s)", FontSize=12,FontWeight="bold")
-ylabel("Position (m)", FontSize=12,FontWeight="bold")
+xlabel("Time (s)", FontSize=12, Interpreter="latex")
+ylabel("Position (m)", FontSize=12,Interpreter="latex")

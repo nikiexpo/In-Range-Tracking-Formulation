@@ -41,9 +41,9 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=600;     
-problem.time.tf_max=600; 
-guess.tf=600;
+problem.time.tf_min=1;     
+problem.time.tf_max=3000; 
+guess.tf=300;
 
 % Parameters bounds. pl=< p <=pu
 problem.parameters.pl=[];
@@ -51,38 +51,39 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[300 0];
+problem.states.x0=[0 0 100];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[300 0];
-problem.states.x0u=[300 0];
+problem.states.x0l=[0 0 100];
+problem.states.x0u=[0 0 100];
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[0 0]; 
-problem.states.xu=[1000 1000]; % --> dont know if true
+problem.states.xl=[-100 -5 0]; 
+problem.states.xu=[100 5 100];
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[0.1 0.1]; 
-problem.states.xErrorTol_integral=[0.1 0.1]; 
+problem.states.xErrorTol_local=[0.1 0.1 0.1]; 
+problem.states.xErrorTol_integral=[0.1 0.1 0.1]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[0.1 0.1];
+problem.states.xConstraintTol=[0.1 0.5 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[50 0]; 
-problem.states.xfu=[150 100];
+problem.states.xfl=[-6 -5 50]; 
+problem.states.xfu=[6 5 100];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
-guess.states(:,1)=[300 100];
+guess.states(:,1)=[0 0];
 
 guess.states(:,2)=[0 0];
 
+guess.states(:,3)=[100 50];
 
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
@@ -91,12 +92,12 @@ guess.states(:,2)=[0 0];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[0];
-problem.inputs.uu=[150];
+problem.inputs.ul=[-15];
+problem.inputs.uu=[15];
 
 % Bounds on the first control action
-problem.inputs.u0l=[0];
-problem.inputs.u0u=[150];
+problem.inputs.u0l=[-15];
+problem.inputs.u0u=[15];
 
 % Input rate bounds
 problem.inputs.url=[]; 
@@ -114,9 +115,9 @@ problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
 
-problem.constraints.gl=[]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gu=[]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gTol_neq=[]; % inequality constraint error bounds
+problem.constraints.gl=[-inf]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gu=[0]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
 
 % OPTIONAL: define the time duration each constraint will be active, for
 % example (for ECH enabled in setings)
@@ -131,21 +132,18 @@ problem.constraints.bu=[];
 problem.constraints.bTol=[]; 
 
 % store the necessary problem parameters used in the functions
-
-problem.data.m1 = 0.0009;
-problem.data.m2 = 0.0031;
-problem.data.m3 = 0.0415;
-problem.data.m4 = 0.0;
-
-problem.data.rho = 10;
-problem.data.xd = 100;
-
-
+problem.data.m=10;
+problem.data.delta = 2.5;
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
 % problem.data.penalty.i=1; %starting weight
 
+pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
+tt = linspace(0,3000,length(pt));
 
+x_t = pchip(tt,pt);
+
+problem.data.XT = x_t;
 
 
 % Get function handles and return to Main.m
@@ -192,24 +190,13 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Define states and setpoints
-x1 = x(:, 1); 
-u1 = u(:,1);
+x = x(:, 1); % Chaser position
 
-xd = data.xd;
-rho = data.rho;
-delta = data.delta;
+%xt = data.XT;% Target position
 
-%Define constants
-KL = 1;
-KR = 1;
+x_t = 5.*sin(2.*pi.*t./200);
 
-%Define softmax
-soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
-
-%Define tracking-in-range indicator function
-LH = tanh(KL.*((x1 - xd)-delta)) + tanh(KL.*(-(x1 - xd)-delta));
-LR = 1/KR.*soft_max(((x1-xd).^2 - delta.^2)./delta.^2, 0, 1);
-stageCost = (x1-xd).^2 + rho.*u1.^2;
+stageCost = 200.*(x-x_t).^2;
 %------------- END OF CODE --------------
 
 
@@ -234,7 +221,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=0;
+boundaryCost=-tf;
 
 %------------- END OF CODE --------------
 
