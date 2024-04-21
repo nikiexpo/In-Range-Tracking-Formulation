@@ -1,5 +1,5 @@
 
-function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
+function [dx] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
 % Template for specifying the dynamics for internal model 
 %
 % Syntax:  
@@ -32,22 +32,48 @@ function [dx, g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p
 %------------- BEGIN CODE --------------
 
 %Stored data
-m = data.m;
-% xt = ppval(data.XT,t);
-xt = 5.*sin(2.*pi.*t./200);
+mu = data.mu;
+
 %Define states
-x1 = x(:,1);
-v1 = x(:,2);
-E =x(:,3);
+% z = [a, h, k,p, q, \lambda]^T
+
+a = x(:,1);
+h = x(:,2);
+k = x(:,3);
+p = x(:,4);
+q = x(:,5);
+lambda = x(:,6);
+
+
+% a - semi major, i - incidence, e - eccentricity,  ω the argument of perigee, Ω the RAAN and L is the true longitude. 
+
+e = sqrt(h.^2 + k.^2);
+i = 2.*atan2(sqrt(p.^2 + q.^2),1);
+O = atan2(p,q);
+w = atan2(h,k) - atan2(p,q);
+M = lambda - atan2(h,k);
+G = sqrt(1 - h.^2 - k.^2);
+beta = 1./(1+G);
+n = sqrt(mu).*a.^(-3/2);
 
 %Define inputs
-u1 = u(:,1);
+F = u(:,1);
+
+cf = cos(F);
+sf = sin(F);
+
+%Define diffrential equation elements
+r = a.*(1 - k.*cf - h.*sf);
+
+X1 = a.* ((1 - h.^2 .* beta).*cf + h.*k.*beta.*sf - k);
+Y1 = a.* (h.*k.*beta.*cf + (1 - k.^2.*beta).*sf - h);
+dX1 = a.^2 .*n.* r.^(-1) .* (h.*k.*beta.*cf - (1 - h.^2 .* beta).*sf);
+dY1 = a.^2 .*n.* r.^(-1) .* ((1 - k.^2 .* beta).*cf - h.*k.*beta.*sf);
+
 
 
 %Define ODE right-hand side
-dx(:,1) = v1;
-dx(:,2) = u1./m;
-dx(:,3) = -0.1 - (0.283*u1).^2 - (0.566*v1).^2;
+
 
 % %Define Path constraints
 % g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
@@ -55,6 +81,6 @@ dx(:,3) = -0.1 - (0.283*u1).^2 - (0.566*v1).^2;
 % ...
 % 
 % 
-g_neq(:,1)= (x1 - xt).^2 - data.delta.^2;
+
 
 %------------- END OF CODE --------------
