@@ -50,40 +50,70 @@ problem.parameters.pl=[];
 problem.parameters.pu=[];
 guess.parameters=[];
 
-% Initial conditions for system.
-problem.states.x0=[0 0 100];
+
+a0 = 42000;
+e0 = 0;
+i0 = 28.5;
+O0 = 30;
+w0 = 10;
+M0 = 0;
+
+ft = 3.5 * 10^(-7);
+
+af = 42767.073;
+ef = 1.64459 * 10^(-4);
+i_f = 28.343;
+Of = 29.999;
+wf = 247.299;
+Mf = 120.905; 
+
+h0 = e0.*sind(w0 + O0);
+k0 = e0.*cosd(w0 + O0);
+p0 = tand(i0/2).*sind(O0);
+q0 = tand(i0/2)*cosd(O0);
+lambda0 = M0 + w0 + O0;
+
+hf = ef.*sind(wf + Of);
+kf = ef.*cosd(wf + Of);
+pf = tand(i_f/2).*sind(Of);
+qf = tand(i_f/2)*cosd(Of);
+lambdaf = Mf + wf + Of;
+
+init = [a0, h0, k0, p0, q0, lambda0];
+fin = [af, hf, kf, pf, qf, lambdaf];
+% Initial conditions for system
+
+problem.states.x0=init;
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[0 0 100];
-problem.states.x0u=[0 0 100];
+problem.states.x0l=init;
+problem.states.x0u=init;
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-100 -5 0]; 
-problem.states.xu=[100 5 100];
+problem.states.xl=[-inf -inf -inf -inf -inf -inf]; 
+problem.states.xu=[inf inf inf inf inf inf];
+
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[0.1 0.1 0.1]; 
-problem.states.xErrorTol_integral=[0.1 0.1 0.1]; 
+problem.states.xErrorTol_local=[0.1 0.1 0.1 0.1 0.1 0.1]; 
+problem.states.xErrorTol_integral=[0.1 0.1 0.1 0.1 0.1 0.1]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[0.1 0.5 0.1];
+problem.states.xConstraintTol=[0.1 0.5 0.1 0.1 0.1 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[-6 -5 50]; 
-problem.states.xfu=[6 5 100];
+problem.states.xfl=fin ; 
+problem.states.xfu=fin ;
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
-guess.states(:,1)=[0 0];
+guess.states(:,:)=[init' fin'];
 
-guess.states(:,2)=[0 0];
-
-guess.states(:,3)=[100 50];
 
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
@@ -190,14 +220,27 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Define states and setpoints
-%x = x(:, 1); % Chaser position
+a = x(:, 1); 
+h = x(:, 2);
+k = x(:, 3);
+p = x(:, 4);
+q = x(:, 5);
+lambda = x(:,6);
 
-%xt = data.XT;% Target position
+at = data.at;
+ht = data.ht;
+kt = data.kt;
+pt = data.pt;
+qt = data.qt;
+lambdat = data.lambdat;
+
+
 
 %x_t = 5.*sin(2.*pi.*t./50);
 
 %stageCost = 200.*(x-x_t).^2;
-stageCost = 0.*t;
+stageCost = ((a - at)./at).^2 + (h-ht).^2 + (k-kt).^2 + (p-pt).^2 + (q-qt).^2 ...
+            + ((lamda - lambdat)./(2.*pi)).^2;
 %------------- END OF CODE --------------
 
 
@@ -222,7 +265,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=-tf;
+boundaryCost=tf;
 
 %------------- END OF CODE --------------
 

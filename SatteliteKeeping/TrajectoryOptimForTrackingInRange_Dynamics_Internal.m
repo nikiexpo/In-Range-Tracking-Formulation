@@ -62,6 +62,11 @@ F = u(:,1);
 cf = cos(F);
 sf = sin(F);
 
+%unit vecs (????) SORT THIS SHIT    
+f_cap = 0;
+g_cap = 0;
+w_cap = 0;
+
 %Define diffrential equation elements
 r = a.*(1 - k.*cf - h.*sf);
 
@@ -69,11 +74,26 @@ X1 = a.* ((1 - h.^2 .* beta).*cf + h.*k.*beta.*sf - k);
 Y1 = a.* (h.*k.*beta.*cf + (1 - k.^2.*beta).*sf - h);
 dX1 = a.^2 .*n.* r.^(-1) .* (h.*k.*beta.*cf - (1 - h.^2 .* beta).*sf);
 dY1 = a.^2 .*n.* r.^(-1) .* ((1 - k.^2 .* beta).*cf - h.*k.*beta.*sf);
+dX1dh = a.*(-(h.*cf - k.*sf).*(beta + (h.^2 .* beta.^3)./(1-beta)) - (a./r) .* cf.*(h.*beta - sf));
+dX1dk = -a.*((h.*cf - k.*sf).*(h.^2 .* k .* beta.^3)./(1-beta) + 1 + (a./r) .* sf.*(sf - h.*beta));
+dY1dh = a.*((h.*cf - k.*sf).*(h.*k.*beta.^3./(1-beta)) - 1 + (a./r).*cf.*(k.*beta - cf));
+dY1dk = a.*((h.*cf - k.*sf).*(beta + (k.^2 .* beta.^3 ./ (1 - beta))) + (a./r).*sf.*(cf - k.*beta));
 
-
-
-%Define ODE right-hand side
-
+%Define ODE 
+dadr = 2.*a.^(-1).*n.^(-2).*(dX1.*f_cap + dY1.*g_cap);
+dhdr = G.*n.^(-1).*a.^(-2).*((dX1dk - h.*beta.*dX1./n).*f_cap + (dY1dk - h.*beta.*dY1./n).*g_cap);
+dkdr = -G.*n.^(-1).*a.^(-2).*((dX1dh + k.*beta.*dX1./n).*f_cap + (dY1dh + k.*beta.*dY1./n).*g_cap);
+dpdr = (K.*Y1.*n.^(-1).*a.^(-2).*G.^(-1)./2).*w_cap;
+dqdr = (K.*X1.*n.^(-1).*a.^(-2).*G.^(-1)./2).*w_cap;
+dlambdadr = n.^(-1).*a.^(-2).*(-2.*X1 + G.*(h.*beta.*dX1dh + k.*beta.*dX1dk)).*f_cap...
+            + n.^(-1).*a.^(-2).*(-2.*Y1 + G.*(h.*beta.*dY1dh + k.*beta.*dY1dk)).*g_cap...
+            + n.^(-1).*a.^(-2).*G^(-1).*(q.*Y1 - p.*X1).*w_cap;
+dx(:,1) = dadr;
+dx(:,2) = dhdr;
+dx(:,3) = dkdr;
+dx(:,4) = dpdr;
+dx(:,5) = dqdr;
+dx(:,6) = dlambdadr;
 
 % %Define Path constraints
 % g_eq(:,1)=g_eq1(x1,...,u1,...p,t);
