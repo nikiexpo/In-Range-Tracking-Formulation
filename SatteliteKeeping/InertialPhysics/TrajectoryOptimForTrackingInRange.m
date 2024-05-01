@@ -54,7 +54,7 @@ mu = 398600.4; %km^3 s^-2
 Re = 6371; % radius of earth in km
 vc = sqrt(mu ./ (Re + 400));
 init = [Re + 400, 0, 0, 0, vc, 0,100];
-at = 3.5 * 10^(-7); %max acc
+at = 10.*3.5 * 10^(-7); %max acc
 
 % Initial conditions for system
 
@@ -147,7 +147,7 @@ problem.constraints.bTol=[];
 % store the necessary problem parameters used in the functions
 % problem.data.m=10;
 problem.data.delta = 25; %km
-problem.data.ref = 420; %km
+problem.data.ref = 6371 + 420; %km
 problem.data.mu = mu;
 problem.data.at = at;
 
@@ -238,7 +238,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 E = xf(7);
-boundaryCost=E;
+boundaryCost=-E;
 
 %------------- END OF CODE --------------
 

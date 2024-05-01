@@ -46,15 +46,9 @@ plot(solution.T, problem.data.ref.*ones(size(solution.T)), 'r--')
 plot(solution.T, (problem.data.ref+problem.data.delta).*ones(size(solution.T)), 'r--')
 plot(solution.T, (problem.data.ref-problem.data.delta).*ones(size(solution.T)), 'r--')
 hold off
-grid on
 
 figure
 plot(solution.T, [solution.U(:,1), solution.U(:,2), solution.U(:,3)], LineWidth=3)
-grid on
-
-figure
-plot(solution.T, [solution.X(:,1), solution.X(:,2), solution.X(:,3)], LineWidth=3)
-grid on
 % axis([0 solution.T(end)    -10 10])
 % hold on
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200), 'r--')
