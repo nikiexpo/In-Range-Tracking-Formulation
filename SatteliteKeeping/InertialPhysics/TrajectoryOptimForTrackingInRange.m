@@ -41,8 +41,8 @@ problem.time.t0_max = 0;
 guess.t0 = 0;
 
 % Final time. Let tf_min=tf_max if tf is fixed.
-problem.time.tf_min=1;     
-problem.time.tf_max=3000; 
+problem.time.tf_min=400;     
+problem.time.tf_max=400; 
 guess.tf=300;
 
 % Parameters bounds. pl=< p <=pu
@@ -50,37 +50,12 @@ problem.parameters.pl=[];
 problem.parameters.pu=[];
 guess.parameters=[];
 
+mu = 398600.4; %km^3 s^-2
+Re = 6371; % radius of earth in km
+vc = sqrt(mu ./ (Re + 400));
+init = [Re + 400, 0, 0, 0, vc, 0,100];
+at = 3.5 * 10^(-7); %max acc
 
-a0 = 42000;
-e0 = 0;
-i0 = 28.5;
-O0 = 30;
-w0 = 10;
-M0 = 0;
-
-ft = 3.5 * 10^(-7);
-
-af = 42767.073;
-ef = 1.64459 * 10^(-4);
-i_f = 28.343;
-Of = 29.999;
-wf = 247.299;
-Mf = 120.905; 
-
-h0 = e0.*sind(w0 + O0);
-k0 = e0.*cosd(w0 + O0);
-p0 = tand(i0/2).*sind(O0);
-q0 = tand(i0/2)*cosd(O0);
-lambda0 = M0 + w0 + O0;
-
-hf = ef.*sind(wf + Of);
-kf = ef.*cosd(wf + Of);
-pf = tand(i_f/2).*sind(Of);
-qf = tand(i_f/2)*cosd(Of);
-lambdaf = Mf + wf + Of;
-
-init = [a0, h0, k0, p0, q0, lambda0];
-fin = [af, hf, kf, pf, qf, lambdaf];
 % Initial conditions for system
 
 problem.states.x0=init;
@@ -90,8 +65,8 @@ problem.states.x0l=init;
 problem.states.x0u=init;
 
 % State bounds. xl=< x <=xu
-problem.states.xl=[-inf -inf -inf -inf -inf -inf]; 
-problem.states.xu=[inf inf inf inf inf inf];
+problem.states.xl=[-inf -inf -inf -inf -inf -inf -inf]; 
+problem.states.xu=[inf inf inf inf inf inf inf];
 
 
 % State rate bounds. xrl=< x_dot <=xru
@@ -99,20 +74,26 @@ problem.states.xu=[inf inf inf inf inf inf];
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[0.1 0.1 0.1 0.1 0.1 0.1]; 
-problem.states.xErrorTol_integral=[0.1 0.1 0.1 0.1 0.1 0.1]; 
+problem.states.xErrorTol_local=[0.1 0.1 0.1 0.1 0.1 0.1 0.1]; 
+problem.states.xErrorTol_integral=[0.1 0.1 0.1 0.1 0.1 0.1 0.1]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[0.1 0.5 0.1 0.1 0.1 0.1];
+problem.states.xConstraintTol=[0.1 0.5 0.1 0.1 0.1 0.1 0.1];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=fin ; 
-problem.states.xfu=fin ;
+problem.states.xfl= [-inf -inf -inf -inf -inf -inf -inf]; 
+problem.states.xfu=[inf inf inf inf inf inf inf]; 
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
-guess.states(:,:)=[init' fin'];
+guess.states(:,1)=[init(1) init(1)];
+guess.states(:,2)=[init(2) init(2)];
+guess.states(:,3)=[init(3) init(3)];
+guess.states(:,4)=[init(4) init(4)];
+guess.states(:,5)=[init(5) init(5)];
+guess.states(:,6)=[init(6) init(6)];
+guess.states(:,7)=[init(7) init(7)];
 
 
 % Number of control actions N 
@@ -122,27 +103,29 @@ guess.states(:,:)=[init' fin'];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[-15];
-problem.inputs.uu=[15];
+problem.inputs.ul=[-at, -at, -at];
+problem.inputs.uu=[at, at, at];
 
 % Bounds on the first control action
-problem.inputs.u0l=[-15];
-problem.inputs.u0u=[15];
+problem.inputs.u0l=problem.inputs.ul;
+problem.inputs.u0u=problem.inputs.uu;
 
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1];
+problem.inputs.uConstraintTol=[0.1, 0.1, 0.1];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
-guess.inputs(:,1)=[0 0];
+guess.inputs(:,1)=[0, 0];
+guess.inputs(:,2)=[0, 0];
+guess.inputs(:,3)=[0, 0];
 
 % Path constraint function 
-problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
-problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
+problem.constraints.ng_eq=1; % number of quality constraints in format of g(x,u,p,t) == 0
+problem.constraints.gTol_eq=[0.1]; % equality cosntraint error bounds
 % 
 
 problem.constraints.gl=[-inf]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
@@ -162,18 +145,22 @@ problem.constraints.bu=[];
 problem.constraints.bTol=[]; 
 
 % store the necessary problem parameters used in the functions
-problem.data.m=10;
-problem.data.delta = 2.5;
+% problem.data.m=10;
+problem.data.delta = 25; %km
+problem.data.ref = 420; %km
+problem.data.mu = mu;
+problem.data.at = at;
+
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
 % problem.data.penalty.i=1; %starting weight
 
-pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
-tt = linspace(0,3000,length(pt));
-
-x_t = pchip(tt,pt);
-
-problem.data.XT = x_t;
+% pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
+% tt = linspace(0,3000,length(pt));
+% 
+% x_t = pchip(tt,pt);
+% 
+% problem.data.XT = x_t;
 
 
 % Get function handles and return to Main.m
@@ -220,27 +207,13 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %------------- BEGIN CODE --------------
 
 %Define states and setpoints
-a = x(:, 1); 
-h = x(:, 2);
-k = x(:, 3);
-p = x(:, 4);
-q = x(:, 5);
-lambda = x(:,6);
-
-at = data.at;
-ht = data.ht;
-kt = data.kt;
-pt = data.pt;
-qt = data.qt;
-lambdat = data.lambdat;
 
 
 
 %x_t = 5.*sin(2.*pi.*t./50);
 
 %stageCost = 200.*(x-x_t).^2;
-stageCost = ((a - at)./at).^2 + (h-ht).^2 + (k-kt).^2 + (p-pt).^2 + (q-qt).^2 ...
-            + ((lamda - lambdat)./(2.*pi)).^2;
+stageCost = 0.*t;
 %------------- END OF CODE --------------
 
 
@@ -264,8 +237,8 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %    boundaryCost - Scalar boundary cost
 %
 %------------- BEGIN CODE --------------
-
-boundaryCost=tf;
+E = xf(7);
+boundaryCost=E;
 
 %------------- END OF CODE --------------
 
