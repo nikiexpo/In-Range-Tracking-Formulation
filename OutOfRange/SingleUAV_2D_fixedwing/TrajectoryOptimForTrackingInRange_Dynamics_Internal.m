@@ -50,11 +50,9 @@ RPM_max = data.RPM_max;
 %Define states
 posx = x(:,1);
 posy = x(:,2);
-posz = x(:,3);
-Vair = x(:,4);
-Vvert = x(:,5);
-theta = x(:,6);
-E = x(:,7);
+Vair = x(:,3);
+theta = x(:,4);
+E = x(:,5);
 
 %Define inputs
 gamma = u(:,1);
@@ -71,7 +69,7 @@ alpha = u(:,3);
 thr=interp1(data.gammaLookup(:,1),data.gammaLookup(:,2),gamma,'spline');
 thr(thr<0) = 0;
 T = maxT .* thr;
-Pi = k1.*T.*(Vvert./2 + sqrt((Vvert./2).^2 + T./k2^2));
+Pi = c1.*T.^(3/2);
 Pp = c2.*T.^(3/2) + c3.*(Vair.*cos(alpha)).^2 .* (T.^(1/2));
 Ppar = c4.*Vair.^3;
 
@@ -80,11 +78,9 @@ Ppar = c4.*Vair.^3;
 %Define ODE right-hand side
 dx(:,1) = Vair.*cos(theta);
 dx(:,2) = Vair.*sin(theta);
-dx(:,3) = Vvert;
-dx(:,4) = (T.*cos(theta_tilde - theta).*sin(alpha) - c4.* Vair.^2)./m;
-dx(:,5) = (T.*cos(alpha) + c5.*(Vair .* sin(alpha)).^2)./m -g;
-dx(:,6) = (T.*sin(theta_tilde - theta).*sin(alpha))./(m.*Vair); %vair cannot be zero
-dx(:,7) = - (Pi + Ppar + Pp);
+dx(:,3) = (T.*cos(theta_tilde - theta).*sin(alpha) - c4.* Vair.^2)./m;
+dx(:,4) = (T.*sin(theta_tilde - theta).*sin(alpha))./(m.*Vair); %vair cannot be zero
+dx(:,5) = - (Pi + Ppar + Pp);
 
 % %Define Path constraints
 % g_eq(:,1)=g_eq1(x1,...,u1,...p,t);

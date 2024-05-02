@@ -51,41 +51,39 @@ problem.parameters.pu=[];
 guess.parameters=[];
 
 % Initial conditions for system.
-problem.states.x0=[0 0 0 0.01 0 0 203796];
+problem.states.x0=[0 0.01 203796];
 
 % Initial conditions for system. Bounds if x0 is free s.t. x0l=< x0 <=x0u
-problem.states.x0l=[0 0 0 0.01 0 -pi 203796]; 
-problem.states.x0u=[0 0 0 0.01 0  pi 203796]; 
+problem.states.x0l=[0 0.01 203796]; 
+problem.states.x0u=[0 0.01 203796]; 
 
 % State bounds. xl=< x <=xu
-problem.states.xl=  [-1100  -1100   0.0 0.01 -4 -pi 0];
-problem.states.xu=  [1100 1100 1300  18  4  pi 203796];
+problem.states.xl=  [-1100, 0.01, 0];
+problem.states.xu=  [1100 ,  18 ,203796];
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
 % problem.states.xru=[x1dot_upperbound ... xndot_upperbound]; 
 
 % State error bounds
-problem.states.xErrorTol_local=[1 1 1 1e-1 1e-1 deg2rad(5) 100]; 
-problem.states.xErrorTol_integral=[1 1 1 1e-1 1e-1 deg2rad(5) 100]; 
+problem.states.xErrorTol_local=[1 1e-1 100]; 
+problem.states.xErrorTol_integral=[1 1e-1 100]; 
 
 % State constraint error bounds
-problem.states.xConstraintTol=[1 1 1 1e-1 1e-1 deg2rad(5) 100];
+problem.states.xConstraintTol=[1 1e-1 100];
 % problem.states.xrConstraintTol=[eps_x1dot_bounds ... eps_xndot_bounds];
 
 % Terminal state bounds. xfl=< xf <=xfu
-problem.states.xfl=[-1100  -1100   0.0 0.01 -4 -pi 0]; 
-problem.states.xfu=[1100 1100 1300  18  4  pi 203796];
+problem.states.xfl=[-1100 0.01  0]; 
+problem.states.xfu=[1100  18  203796];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
 guess.states(:,1)=[0 0];
-guess.states(:,2)=[0 0];
-guess.states(:,3)=[0 0];
-guess.states(:,4)=[12 12];
-guess.states(:,5)=[4 -4];
-guess.states(:,6)=[deg2rad(45) deg2rad(45)];
-guess.states(:,7)=[203796 0.4*203796];
+
+guess.states(:,2)=[12 12];
+
+guess.states(:,3)=[203796 0.4*203796];
 
 % Number of control actions N 
 % Set problem.inputs.N=0 if N is equal to the number of integration steps.  
@@ -94,25 +92,24 @@ guess.states(:,7)=[203796 0.4*203796];
 problem.inputs.N=0;       
       
 % Input bounds
-problem.inputs.ul=[0 -pi/2 deg2rad(-35)]; % throttle (%), thrust orientation (theta tilde), alpha (AoA)
-problem.inputs.uu=[100  pi/2  deg2rad(35)];
+problem.inputs.ul=[0 deg2rad(-35)]; % throttle (%), alpha (AoA)
+problem.inputs.uu=[100  deg2rad(35)];
 
 % Bounds on the first control action
-problem.inputs.u0l=[0 -pi/2 deg2rad(-35)];
-problem.inputs.u0u=[100  pi/2  deg2rad(35)]; 
+problem.inputs.u0l=[0 deg2rad(-35)];
+problem.inputs.u0u=[100  deg2rad(35)]; 
 
 % Input rate bounds
 problem.inputs.url=[]; 
 problem.inputs.uru=[]; 
 
 % Input constraint error bounds
-problem.inputs.uConstraintTol=[0.1 deg2rad(5) deg2rad(3)];
+problem.inputs.uConstraintTol=[0.1 deg2rad(3)];
 problem.inputs.urConstraintTol=[];
 
 % Guess the input sequences with [u0 ... uf]
 guess.inputs(:,1)=[1 1];
-guess.inputs(:,2)=[deg2rad(45) deg2rad(45) ];
-guess.inputs(:,3)=[deg2rad(35) deg2rad(35) ];
+guess.inputs(:,2)=[deg2rad(35) deg2rad(35) ];
 
 % Path constraint function 
 problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,p,t) == 0
@@ -224,19 +221,16 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
 %Define states and setpoints
 xpos = x(:, 1); % Chaser position
-ypos = x(:, 2); 
-zpos = x(:, 3);
 
 xt = data.XT(t);
-yt = data.YT(t); % Target y position
-zt = data.ZT(t);
+
 % x_t = 5.*sin(2.*pi.*t./200)+9;
 
 % k = data.penalty.values(data.penalty.i);
 % stageCost = soft_max( soft_max(fx, fy, 1/50) ,0, 1/50);
 % stageCost = fx + fy;
 % d = 1;
-stageCost =(xpos-xt).^2 + (ypos-yt).^2 + (zpos - zt).^2;
+stageCost =(xpos-xt).^2;
 % stageCost = max(f,0);
 %------------- END OF CODE --------------
 
@@ -262,7 +256,7 @@ function boundaryCost=E_unscaled(x0,xf,u0,uf,p,t0,tf,data)
 %
 %------------- BEGIN CODE --------------
 
-boundaryCost=-10.*xf(7);
+boundaryCost=-10.*xf(3);
 
 %------------- END OF CODE --------------
 

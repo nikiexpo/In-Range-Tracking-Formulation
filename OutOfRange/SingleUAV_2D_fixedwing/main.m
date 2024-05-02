@@ -68,17 +68,17 @@ options= problem.settings(100);                  % Get options and solver settin
 
 xpos = solution.X(:,1);
 ypos = solution.X(:,2);
-zpos = solution.X(:,3);
 
-plot3(xpos,ypos,zpos)
+plot(solution.T, xpos)
 hold on 
+plot(solution.T, ypos)
 xt = problem.data.XT(solution.T);
 yt =  problem.data.YT(solution.T);
-zt =  problem.data.ZT(solution.T);
 
-plot3(xt,yt,zt)
+plot(solution.T, xt)
+plot(solution.T, yt)
 hold off
 legend('tracker', 'target')
 
 figure
-plot(solution.T, solution.X(:,7))
+plot(solution.T, solution.X(:,5))
