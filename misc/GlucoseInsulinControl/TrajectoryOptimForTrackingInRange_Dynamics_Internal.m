@@ -38,9 +38,10 @@ m1 = data.m1;
 m2 = data.m2;
 m3 = data.m3;
 m4 = data.m4;
+dist = data.disturb;
 
 %Define states
-x1 = x(:,1);
+x1 = x(:,1) + dist(t);
 x2 = x(:,2);
 
 %Define inputs

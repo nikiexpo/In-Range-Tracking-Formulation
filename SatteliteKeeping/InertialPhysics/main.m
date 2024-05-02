@@ -42,19 +42,35 @@ options= problem.settings(100);                  % Get options and solver settin
 figure
 plot(solution.T, sqrt(solution.X(:,1).^2 + solution.X(:,2).^2 + solution.X(:,3).^2), LineWidth=3)
 hold on
+ylim([6720, 6860])
 plot(solution.T, problem.data.ref.*ones(size(solution.T)), 'r--')
-plot(solution.T, (problem.data.ref+problem.data.delta).*ones(size(solution.T)), 'r--')
-plot(solution.T, (problem.data.ref-problem.data.delta).*ones(size(solution.T)), 'r--')
+x = solution.T;
+y2 = (problem.data.ref+problem.data.delta).*ones(size(solution.T));
+y1 = (problem.data.ref-problem.data.delta).*ones(size(solution.T));
+patch([x' fliplr(x')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 )        % Below Lower Curve
+patch([x' fliplr(x')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curv
+% plot(solution.T, (problem.data.ref+problem.data.delta).*ones(size(solution.T)), 'r--')
+% plot(solution.T, (problem.data.ref-problem.data.delta).*ones(size(solution.T)), 'r--')
 hold off
 grid on
+legend(["Tracker", "Reference", "Out of Bounds" ])
+xlabel("Time $(s)$", FontSize=12, Interpreter="latex")
+ylabel("Position $(km)$", FontSize=12,Interpreter="latex")
 
 figure
 plot(solution.T, [solution.U(:,1), solution.U(:,2), solution.U(:,3)], LineWidth=3)
 grid on
+legend(["Acceleration in X axis","Acceleration in Y axis", "Acceleration in Z axis"])
+xlabel("Time $(s)$", FontSize=12, Interpreter="latex")
+ylabel("Acceleration $(\frac{km}{x^2})$", FontSize=12,Interpreter="latex")
 
 figure
 plot(solution.T, [solution.X(:,1), solution.X(:,2), solution.X(:,3)], LineWidth=3)
 grid on
+legend(["Position in X axis", "Position in Y axis", "Position in Z axis" ])
+xlabel("Time $(s)$", FontSize=12, Interpreter="latex")
+ylabel("Position $(km)$", FontSize=12,Interpreter="latex")
+
 % axis([0 solution.T(end)    -10 10])
 % hold on
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200), 'r--')

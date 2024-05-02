@@ -142,6 +142,12 @@ problem.data.xd = 100;
 problem.data.delta = 10;
 
 
+pt = repmat([0 180 0 -30 0 0 180 0],1,1);
+tt = linspace(0,problem.time.tf_max,length(pt));
+x_t = griddedInterpolant(tt,pt,'pchip','nearest');
+problem.data.disturb = x_t;
+
+
 % optional setting for automatic regularization
 % problem.data.penalty.values=[weight_1, weight_2, ... weight_n];
 % problem.data.penalty.i=1; %starting weight

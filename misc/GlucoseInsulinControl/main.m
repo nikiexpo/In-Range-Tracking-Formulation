@@ -44,6 +44,8 @@ subplot(2,1,1)
 plot(solution.T, solution.X(:,1))
 hold on
 plot(solution.T, problem.data.xd.*ones(size(solution.T)), Color=[1 0 0])
+plot(solution.T, (problem.data.xd+problem.data.delta).*ones(size(solution.T)), Color=[1 0 0])
+plot(solution.T, (problem.data.xd-problem.data.delta).*ones(size(solution.T)), Color=[1 0 0])
 hold off
 grid on 
 title("Glucose plot")
@@ -57,4 +59,11 @@ grid on
 figure
 plot(solution.T, solution.U(:,1))
 title("Rate of infusion of exogenous harmones")
+grid on
+
+
+
+figure
+plot(solution.T, problem.data.disturb(solution.T))
+title("Disturbance")
 grid on
