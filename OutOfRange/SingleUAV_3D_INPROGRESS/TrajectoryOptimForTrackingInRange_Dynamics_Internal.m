@@ -1,5 +1,5 @@
 
-function [dx] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
+function [dx,g_neq] = TrajectoryOptimForTrackingInRange_Dynamics_Internal(x,u,p,t,data)
 % Template for specifying the dynamics for internal model 
 %
 % Syntax:  
@@ -48,9 +48,9 @@ RPM_max = data.RPM_max;
 % xt = ppval(data.XT,t);
 %xt = 5.*sin(2.*pi.*t./200);
 %Define states
-posx = x(:,1);
-posy = x(:,2);
-posz = x(:,3);
+xpos = x(:,1);
+ypos = x(:,2);
+zpos = x(:,3);
 Vair = x(:,4);
 Vvert = x(:,5);
 theta = x(:,6);
@@ -82,9 +82,13 @@ dx(:,1) = Vair.*cos(theta);
 dx(:,2) = Vair.*sin(theta);
 dx(:,3) = Vvert;
 dx(:,4) = (T.*cos(theta_tilde - theta).*sin(alpha) - c4.* Vair.^2)./m;
-dx(:,5) = (T.*cos(alpha) + c5.*(Vair .* sin(alpha)).^2)./m -g;
+dx(:,5) = (T.*cos(alpha) + c5.*(Vair .* cos(alpha)).^2)./m -g;
 dx(:,6) = (T.*sin(theta_tilde - theta).*sin(alpha))./(m.*Vair); %vair cannot be zero
 dx(:,7) = - (Pi + Ppar + Pp);
+
+xt = data.XT(t);
+yt = data.YT(t); % Target y position
+g_neq(:,1) = (xpos-xt).^2 + (ypos-yt).^2 -(zpos.* 40/130).^2;
 
 % %Define Path constraints
 % g_eq(:,1)=g_eq1(x1,...,u1,...p,t);

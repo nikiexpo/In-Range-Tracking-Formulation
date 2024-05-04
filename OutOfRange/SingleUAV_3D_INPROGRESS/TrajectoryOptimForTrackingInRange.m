@@ -59,7 +59,7 @@ problem.states.x0u=[0 0 0 0.01 0  pi 203796];
 
 % State bounds. xl=< x <=xu
 problem.states.xl=  [-1100  -1100   0.0 0.01 -4 -pi 0];
-problem.states.xu=  [1100 1100 1300  18  4  pi 203796];
+problem.states.xu=  [1100 1100 130  18  4  pi 203796];
 
 % State rate bounds. xrl=< x_dot <=xru
 % problem.states.xrl=[x1dot_lowerbound ... xndot_lowerbound]; 
@@ -75,7 +75,7 @@ problem.states.xConstraintTol=[1 1 1 1e-1 1e-1 deg2rad(5) 100];
 
 % Terminal state bounds. xfl=< xf <=xfu
 problem.states.xfl=[-1100  -1100   0.0 0.01 -4 -pi 0]; 
-problem.states.xfu=[1100 1100 1300  18  4  pi 203796];
+problem.states.xfu=[1100 1100 130  18  4  pi 203796];
 
 % Guess the state trajectories with [x0 ... xf]
 % guess.time=[t0 ... tf];
@@ -119,9 +119,9 @@ problem.constraints.ng_eq=0; % number of quality constraints in format of g(x,u,
 problem.constraints.gTol_eq=[]; % equality cosntraint error bounds
 % 
 
-problem.constraints.gl=[]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gu=[]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
-problem.constraints.gTol_neq=[]; % inequality constraint error bounds
+problem.constraints.gl=[-inf]; % Lower ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gu=[0]; % Upper ounds for inequality constraint function gl =< g(x,u,p,t) =< gu
+problem.constraints.gTol_neq=[1]; % inequality constraint error bounds
 
 % OPTIONAL: define the time duration each constraint will be active, for
 % example (for ECH enabled in setings)
@@ -138,7 +138,7 @@ problem.constraints.bTol=[];
 % store the necessary problem parameters used in the functions
 problem.data.m=1.282;
 problem.data.g = 9.81;
-problem.data.delta = 2.5; % -- change the range here
+problem.data.delta = 25; % -- change the range here
 problem.data.k1 = 0.8554;
 problem.data.k2 = 0.3051;
 problem.data.c1 = 2.8037;
@@ -157,6 +157,9 @@ problem.data.RPM_max = 10545;
 % problem.data.penalty.values=[1, 2, 3];
 % problem.data.penalty.i=1; %starting weight
 
+problem.data.penalty.values=[1, 10, 40];
+problem.data.penalty.i=1; %starting weight
+
 % pt = repmat([0 20 20 -5 -5 20 20 0],1,10);
 % tt = linspace(0,3000,length(pt));
 % 
@@ -167,7 +170,7 @@ problem.data.RPM_max = 10545;
 % target trajectory -- From Bazili 
 pt_x = repmat([0 17.04 66.99 146.45 250 370.59 500 1000-370.59 750 1000-146.45 1000-66.99 1000-17.04 1000],1,1);
 pt_y = repmat([0 129.41 250 353.55 433.04 482.96 500 1000-482.96 1000-433.04 1000-353.55 750 1000-129.41 1000],1,1);
-pt_z = repmat([100], 1, length(pt_y));
+pt_z = repmat([0], 1, length(pt_y));
 tt = linspace(0,problem.time.tf_max,length(pt_x));
 
 x_t =  griddedInterpolant(tt,pt_x,'pchip','nearest');
@@ -221,22 +224,45 @@ function stageCost=L_unscaled(x,xr,u,ur,p,t,data)
 %          Example: stageCost = 0*t;
 
 %------------- BEGIN CODE --------------
-soft_max = @(x,y,k) log(exp(k.*x) + exp(k.*y)) ./ k;
+soft_max = @(x,y,k) ( max(k.*x, k.*y) + log( exp(k.*x - max(k.*x, k.*y)) + exp(k.*y - max(k.*x, k.*y)) ) ) ./ k;
 %Define states and setpoints
 xpos = x(:, 1); % Chaser position
 ypos = x(:, 2); 
 zpos = x(:, 3);
+delta = data.delta;
 
 xt = data.XT(t);
 yt = data.YT(t); % Target y position
 zt = data.ZT(t);
 % x_t = 5.*sin(2.*pi.*t./200)+9;
 
+% k1=data.penalty.values(data.penalty.i);
+% k2=1e05+(1.6e06-1e05)*(k_L-data.penalty.values(1))./(data.penalty.values(end)-data.penalty.values(1));
+k1 = 40;
+k2 = 1e05+(1.6e06-1e05);
 % k = data.penalty.values(data.penalty.i);
 % stageCost = soft_max( soft_max(fx, fy, 1/50) ,0, 1/50);
 % stageCost = fx + fy;
 % d = 1;
-stageCost =(xpos-xt).^2 + (ypos-yt).^2 + (zpos - zt).^2;
+
+% L1D =  1./(1+exp(-2.*k1.* ((xpos - xt) - delta) )) ...
+%         + 1./(1+exp(-2.*k1.* (-(xpos - xt) - delta) )) - 2;
+L1D = tanh(k1.*((xpos-xt)-delta))+tanh(k1.*(-(xpos-xt)-delta));
+% L2D = 1./(1+exp(2.*k1.* (sqrt((xpos - xt).^2 + (ypos - yt).^2) - delta) )) ...
+%         - 1./(1+exp(-2.*k1.* (-sqrt((xpos - xt).^2 + (ypos - yt).^2) - delta) )) ...
+%         - 1./(1+exp(-2.*k1.* (sqrt((xpos - xt).^2 + (ypos - yt).^2) - delta) )) ...
+%         - 1./(1+exp(-2.*k1.* (-sqrt((xpos - xt).^2 + (ypos - yt).^2) - delta) ));
+
+% L3D = L2D + 1./(1+exp(2.*k1.*((zpos- zt) - delta))) - 1./(1+exp(2.*k1.*(zpos- zt))) ...
+%         - 1./(1+exp(-2.*k1.*((zpos- zt) - delta))) - 1./(1+exp(2.*k1.*(zpos- zt)));
+
+% LRx = 1./k2 .* soft_max((xpos - xt).^2 - delta.^2, 0, 1);
+% LRy =  1./k2 .* soft_max((ypos - yt).^2 - delta.^2, 0, 1);
+% LRz =  1./k2 .* soft_max((zpos - zt).^2 - delta.^2, 0, 1);
+
+% LR = LRx + LRy + LRz;
+
+stageCost =0 .*t;
 % stageCost = max(f,0);
 %------------- END OF CODE --------------
 
