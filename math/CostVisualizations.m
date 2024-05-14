@@ -17,9 +17,9 @@ xr = 1.5;
 figure(1)
 xlim([-5,5])
 
-p5= patch([-dt.*ones(size(f)), fliplr(min(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+p5= patch([-dt.*ones(size(f)), fliplr(min(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [1, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
 hold on
-p6 = patch([+dt.*ones(size(f)), fliplr(max(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+p6 = patch([+dt.*ones(size(f)), fliplr(max(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [1, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
 
 cost = f.^2; %set point
 p1 = plot(f+xr,cost, LineWidth=2, Color=[0 0.4470 0.7410]);
