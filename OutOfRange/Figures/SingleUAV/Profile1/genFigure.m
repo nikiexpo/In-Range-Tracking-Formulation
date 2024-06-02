@@ -43,7 +43,7 @@ p2=plot(tt, x1, 'LineWidth',2,'Color',[0.4660 0.6740 0.1880]);
 
 hold on
 % plot(tt, x2, LineWidth=2)
-p3=plot(tt, problem.data.XT(tt), 'r--');
+p3=plot(tt, problem.data.XT(tt), 'r--', LineWidth=2);
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 + problem.data.delta)
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 - problem.data.delta)
 
