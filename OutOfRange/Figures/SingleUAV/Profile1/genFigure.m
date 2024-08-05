@@ -18,7 +18,7 @@ Sol_setpoint=load('SingleUAV_Setpoint_Profile1.mat');
 % % Obtainting the interpolated solution from polynomials
 tt=transpose(linspace(solution.t0,solution.tf,1000));
 x1=speval(solution,'X',1,tt);
-% x2=speval(solution,'X',2,tt);
+x2=speval(solution,'X',2,tt);
 x5=speval(solution,'X',3,tt);
 % x6=speval(solution,'X',6,tt);
 % ...
@@ -39,6 +39,7 @@ patch([tt' fliplr(tt')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)
 
 p1=plot(Sol_setpoint.tt, Sol_setpoint.x1, 'LineWidth',2,'Color',[0 0.4470 0.7410]);
 p2=plot(tt, x1, 'LineWidth',2,'Color',[0.4660 0.6740 0.1880]);
+% p9=plot(tt, x2, 'LineWidth',2);
 % ylim([problem.states.x0(2) problem.states.x0(1)])
 
 hold on
