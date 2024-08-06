@@ -17,9 +17,9 @@ xr = 1.5;
 figure(15)
 xlim([-5,5])
 
-p5= patch([-dt.*ones(size(f)), fliplr(min(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [1, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+p5= patch([-dt.*ones(size(f)), fliplr(min(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0.6, 0.6, 0.6] , 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 hold on
-p6 = patch([+dt.*ones(size(f)), fliplr(max(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [1, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+p6 = patch([+dt.*ones(size(f)), fliplr(max(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0.6, 0.6, 0.6] , 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 
 cost = f.^2; %set point
 p1 = plot(f+xr,cost, LineWidth=2, Color=[0 0.4470 0.7410]);
@@ -150,9 +150,9 @@ ylabel('$L_S+L_R$',FontSize=12,FontWeight="bold",Interpreter="latex")
 figure(5)
 f = linspace(-10,10, 1000);
 xlim([-10,10])
-p4= patch([-dt.*ones(size(f)), fliplr(min(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+p4= patch([-dt.*ones(size(f)), fliplr(min(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0.6, 0.6, 0.6] , 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 hold on 
-p5 = patch([+dt.*ones(size(f)), fliplr(max(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0, 0, 0] , 'FaceAlpha', 0.15, 'EdgeColor', 'none');
+p5 = patch([+dt.*ones(size(f)), fliplr(max(xlim).*ones(size(f)))]+xr, [linspace(-5, f(1).^2, length(f)), fliplr(linspace(-1, f(1).^2, length(f)))], [0.6, 0.6, 0.6] , 'FaceAlpha', 0.3, 'EdgeColor', 'none');
 cost = J(f, k(1));
 cost = cost + soft_max(f.^2-dt.^2,0,rho(1)).*(1/k2(1));
 p1 = plot(f+xr,cost, LineWidth=2,Color=[0 0.4470 0.7410]);

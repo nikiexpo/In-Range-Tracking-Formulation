@@ -93,10 +93,10 @@ plot3(xpos,ypos+(40/130).*zpos,zt, 'r--', LineWidth=2)
 plot3(xpos,ypos-(40/130).*zpos,zt, 'r--', LineWidth=2)
 hold off
 grid on
-legend('Tracker', 'Target', 'Bounds')
-xlabel("X axis Position(m)")
-ylabel("Y axis Position(m)")
-zlabel("Z axis Position(m)")
+legend('Tracker', 'Target', 'Bounds', Interpreter="latex")
+xlabel("X axis Position(m)", Interpreter="latex")
+ylabel("Y axis Position(m)", Interpreter="latex")
+zlabel("Z axis Position(m)", Interpreter="latex")
 
 figure
 plot(solution.T, solution.X(:,7))

@@ -13,18 +13,23 @@
 %--------------------------------------------------------
 clear all;close all;format compact;
 load('SingleUAV_InRange_Profile1.mat');
+Soft_sol = load('/Users/nikilesh/Documents/UNI/BEng_Dissertation/TrajectoryOptimForTrackingInRange/Figures/SingleUAV/Profile1/SingleUAV_SoftConstraint_Profile1.mat');
 Sol_setpoint=load('SingleUAV_Setpoint_Profile1.mat');
 % 
 % % Obtainting the interpolated solution from polynomials
-tt=transpose(linspace(solution.t0,solution.tf,1000));
+tt=transpose(linspace(solution.t0,solution.tf,10000));
 x1=speval(solution,'X',1,tt);
-x2=speval(solution,'X',2,tt);
-x5=speval(solution,'X',3,tt);
+xt=speval(problem.data,'XT',1,tt);
+% x2=speval(solution,'X',2,tt);
+% x5=speval(solution,'X',3,tt);
 % x6=speval(solution,'X',6,tt);
 % ...
 u1=speval(solution,'U',1,tt);
 % u2=speval(solution,'U',2,tt);
 % ...
+
+sftt = transpose(linspace(Soft_sol.solution.t0,Soft_sol.solution.tf,10000));
+sx1 = speval(Soft_sol.solution,'X',1,sftt);
 
 figure
 % subplot(2,1,1)
@@ -37,14 +42,15 @@ y1 = problem.data.XT(tt) - problem.data.delta;
 p4=patch([tt' fliplr(tt')], [y1' min(ylim).*ones(size(y1'))], 'r', 'FaceAlpha', .3 );        % Below Lower Curve
 patch([tt' fliplr(tt')], [y2' max(ylim).*ones(size(y2'))], 'r', 'FaceAlpha', .3)        % Above Upper Curve
 
+p3=plot(tt, problem.data.XT(tt), '--', 'Color',[0.8 0.8 0.8], LineWidth=2);
 p1=plot(Sol_setpoint.tt, Sol_setpoint.x1, 'LineWidth',2,'Color',[0 0.4470 0.7410]);
 p2=plot(tt, x1, 'LineWidth',2,'Color',[0.4660 0.6740 0.1880]);
-% p9=plot(tt, x2, 'LineWidth',2);
+p9=plot(sftt, sx1, 'LineWidth',2, 'Color', 'red');
 % ylim([problem.states.x0(2) problem.states.x0(1)])
 
 hold on
 % plot(tt, x2, LineWidth=2)
-p3=plot(tt, problem.data.XT(tt), 'r--', LineWidth=2);
+
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 + problem.data.delta)
 % plot(solution.T, 5.*sin(2.*pi.*solution.T./200)+9 - problem.data.delta)
 
@@ -52,9 +58,9 @@ p3=plot(tt, problem.data.XT(tt), 'r--', LineWidth=2);
 
 hold off 
 xlim([0 tt(end)])
-legend([p1,p2,p3,p4],{"Set-point Tracking", "In Range Tracking", "Target", "Out-of-range Region"},'Location','northoutside','NumColumns',2,'Interpreter','latex','FontSize',11)
-xlabel("Time [s]", FontSize=12,FontWeight="bold",Interpreter="latex")
-ylabel("Position [m]", FontSize=12,FontWeight="bold",Interpreter="latex")
+legend([p1,p9,p2,p3,p4],{"Set-point Tracking", "In Range Tracking (a.i.r)", "In Range Tracking (n.a.i.r)", "Target", "Out-of-range Region"},'Location','northoutside','NumColumns',2,'Interpreter','latex','FontSize',11)
+xlabel("Time [s]", FontSize=14,FontWeight="bold",Interpreter="latex")
+ylabel("Position [m]", FontSize=14,FontWeight="bold",Interpreter="latex")
 
 
 % subplot(2,1,2)
