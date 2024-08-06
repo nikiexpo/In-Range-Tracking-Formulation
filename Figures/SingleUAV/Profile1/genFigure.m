@@ -55,7 +55,7 @@ p4=plot(tt, problem.data.XT(tt), 'k--');
 
 hold off 
 xlim([0 tt(end)])
-legend([p1,p2,p3,p4,p5],["Set-point Tracking", "In-range Tracking (n.a.i.r)", "In-range Tracking (a.i.r)", "Reference", "Out-of-range Region"],'Location','northoutside','NumColumns',2,'Interpreter','latex','FontSize',11)
+legend([p1,p2,p3,p4,p5],["Set-point Tracking", "In-range Tracking (n.a.i.r.)", "In-range Tracking (a.i.r.)", "Reference", "Out-of-range Region"],'Location','northoutside','NumColumns',2,'Interpreter','latex','FontSize',11)
 xlabel("Time [s]", FontSize=12,FontWeight="bold",Interpreter="latex")
 ylabel("Position [m]", FontSize=12,FontWeight="bold",Interpreter="latex")
 
